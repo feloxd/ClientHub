@@ -1,10 +1,14 @@
 function validateEnvironment() {
   if (process.env.NODE_ENV !== 'production') return;
   const required = [
-    'DATABASE_URL', 'CLIENT_URL', 'JWT_ACCESS_SECRET', 'JWT_REFRESH_SECRET',
-    'R2_ACCOUNT_ID', 'R2_ACCESS_KEY_ID', 'R2_SECRET_ACCESS_KEY', 'R2_BUCKET',
-    'SMTP_HOST', 'SMTP_USER', 'SMTP_PASS', 'MAIL_FROM'
+    'DATABASE_URL', 'CLIENT_URL', 'JWT_ACCESS_SECRET', 'JWT_REFRESH_SECRET'
   ];
+  if (process.env.STRICT_INTEGRATIONS === 'true') {
+    required.push(
+      'R2_ACCOUNT_ID', 'R2_ACCESS_KEY_ID', 'R2_SECRET_ACCESS_KEY', 'R2_BUCKET',
+      'SMTP_HOST', 'SMTP_USER', 'SMTP_PASS', 'MAIL_FROM'
+    );
+  }
   const missing = required.filter((key) => !process.env[key]);
   if (missing.length) throw new Error(`Faltan variables de producción: ${missing.join(', ')}`);
   if (process.env.JWT_ACCESS_SECRET.length < 32 || process.env.JWT_REFRESH_SECRET.length < 32) {

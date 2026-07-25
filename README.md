@@ -85,6 +85,7 @@ El archivo [`server/.env.example`](server/.env.example) documenta todas las vari
 - `R2_*`: credenciales, bucket y dominio público de Cloudflare R2.
 - `SMTP_*` y `MAIL_FROM`: transporte de correo.
 - `CONTACT_EMAIL`: correo que recibe el formulario público (opcional; usa `SMTP_USER` como respaldo).
+- `STRICT_INTEGRATIONS`: usa `false` en demos sin R2/SMTP y `true` en la producción final.
 
 El cliente solo requiere `VITE_API_URL`, por ejemplo `https://api.tudominio.com/api`.
 
