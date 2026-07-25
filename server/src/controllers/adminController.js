@@ -1,11 +1,12 @@
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const { Op } = require('sequelize');
-const { User, Report, ReportPhoto, Document, Notification, Invitation } = require('../models');
+const { User, Report, ReportPhoto, Document, Notification, Invitation, RefreshToken, AuditLog } = require('../models');
 const { AppError } = require('../middleware/errors');
 const storage = require('../services/storageService');
 const mail = require('../services/mailService');
 const { hash } = require('../services/tokenService');
+const { audit } = require('../services/auditService');
 
 const reportInclude = [
   { model: User, as: 'client', attributes: ['id', 'nombre', 'email', 'activo'] },
@@ -60,6 +61,7 @@ exports.createClient = async (req, res, next) => {
     if (exists) throw new AppError('Ya existe una cuenta con ese correo.', 409);
     const user = await User.create({ nombre: req.body.nombre, email: req.body.email.toLowerCase(), rol: 'cliente', activo: true });
     const invitationUrl = await createInvitation(user);
+    await audit(req, 'crear', 'cliente', user.id, { nombre: user.nombre, email: user.email });
     res.status(201).json({ user, ...(process.env.NODE_ENV === 'development' ? { invitationUrl } : {}) });
   } catch (error) { next(error); }
 };
@@ -73,6 +75,8 @@ exports.updateClient = async (req, res, next) => {
       if (duplicate) throw new AppError('Ya existe una cuenta con ese correo.', 409);
     }
     await user.update({ nombre: req.body.nombre ?? user.nombre, email: req.body.email?.toLowerCase() ?? user.email, activo: req.body.activo ?? user.activo });
+    if (req.body.activo === false) await RefreshToken.update({ revocado: true }, { where: { user_id: user.id, revocado: false } });
+    await audit(req, req.body.activo === false ? 'desactivar' : req.body.activo === true ? 'activar' : 'editar', 'cliente', user.id, { campos: Object.keys(req.body) });
     res.json(user);
   } catch (error) { next(error); }
 };
@@ -92,6 +96,7 @@ exports.deleteClient = async (req, res, next) => {
       ...user.documents.map((document) => document.url)
     ];
     await Promise.all(urls.map((url) => storage.remove(url)));
+    await audit(req, 'eliminar', 'cliente', user.id, { nombre: user.nombre, email: user.email });
     await user.destroy();
     res.status(204).end();
   } catch (error) { next(error); }
@@ -102,6 +107,7 @@ exports.resendInvitation = async (req, res, next) => {
     const user = await User.findOne({ where: { id: req.params.id, rol: 'cliente' } });
     if (!user) throw new AppError('Cliente no encontrado.', 404);
     const invitationUrl = await createInvitation(user);
+    await audit(req, 'reenviar_invitacion', 'cliente', user.id);
     res.json({ message: 'Invitación enviada.', ...(process.env.NODE_ENV === 'development' ? { invitationUrl } : {}) });
   } catch (error) { next(error); }
 };
@@ -120,7 +126,8 @@ exports.reports = async (req, res, next) => {
       { titulo: { [Op.like]: `%${req.query.q}%` } },
       { descripcion: { [Op.like]: `%${req.query.q}%` } }
     ];
-    res.json(await Report.findAll({ where, include: reportInclude, order: [['fecha_servicio', 'DESC']] }));
+    const reports = await Report.findAll({ where, include: reportInclude, order: [['fecha_servicio', 'DESC']] });
+    res.json(await Promise.all(reports.map(storage.signPhotos)));
   } catch (error) { next(error); }
 };
 
@@ -129,7 +136,8 @@ exports.createReport = async (req, res, next) => {
     const client = await User.findOne({ where: { id: req.body.user_id, rol: 'cliente' } });
     if (!client) throw new AppError('El cliente seleccionado no existe.', 404);
     const report = await Report.create(req.body);
-    res.status(201).json(await Report.findByPk(report.id, { include: reportInclude }));
+    await audit(req, 'crear', 'reporte', report.id, { user_id: report.user_id, titulo: report.titulo });
+    res.status(201).json(await storage.signPhotos(await Report.findByPk(report.id, { include: reportInclude })));
   } catch (error) { next(error); }
 };
 
@@ -142,7 +150,8 @@ exports.updateReport = async (req, res, next) => {
       if (!client) throw new AppError('El cliente seleccionado no existe.', 404);
     }
     await report.update(req.body);
-    res.json(await Report.findByPk(report.id, { include: reportInclude }));
+    await audit(req, 'editar', 'reporte', report.id, { campos: Object.keys(req.body) });
+    res.json(await storage.signPhotos(await Report.findByPk(report.id, { include: reportInclude })));
   } catch (error) { next(error); }
 };
 
@@ -151,6 +160,7 @@ exports.deleteReport = async (req, res, next) => {
     const report = await Report.findByPk(req.params.id, { include: [{ model: ReportPhoto, as: 'photos' }] });
     if (!report) throw new AppError('Reporte no encontrado.', 404);
     await Promise.all(report.photos.map((photo) => storage.remove(photo.url)));
+    await audit(req, 'eliminar', 'reporte', report.id, { titulo: report.titulo });
     await report.destroy();
     res.status(204).end();
   } catch (error) { next(error); }
@@ -168,7 +178,8 @@ exports.uploadPhotos = async (req, res, next) => {
       const url = await storage.upload(req.files[i], `reportes/${report.id}/${type}`);
       created.push(await ReportPhoto.create({ report_id: report.id, url, tipo: type, orden: current + i }));
     }
-    res.status(201).json(created);
+    await audit(req, 'subir_fotos', 'reporte', report.id, { tipo: type, cantidad: created.length });
+    res.status(201).json(await Promise.all(created.map(async (photo) => ({ ...photo.toJSON(), url: await storage.signedUrl(photo.url) }))));
   } catch (error) { next(error); }
 };
 
@@ -178,6 +189,7 @@ exports.deletePhoto = async (req, res, next) => {
     if (!photo || String(photo.report_id) !== String(req.params.id)) throw new AppError('Fotografía no encontrada.', 404);
     await storage.remove(photo.url);
     await photo.destroy();
+    await audit(req, 'eliminar_foto', 'reporte', req.params.id, { photo_id: photo.id, tipo: photo.tipo });
     res.status(204).end();
   } catch (error) { next(error); }
 };
@@ -195,6 +207,7 @@ exports.publishReport = async (req, res, next) => {
       body: `Publicamos el reporte “${report.titulo}” correspondiente al ${report.fecha_servicio}. Ya puedes consultarlo en tu portal.`,
       buttonText: 'Ver reporte', buttonUrl: `${process.env.CLIENT_URL}/portal/reportes/${report.id}`
     });
+    await audit(req, 'publicar', 'reporte', report.id, { user_id: report.user_id });
     res.json(report);
   } catch (error) { next(error); }
 };
@@ -202,7 +215,8 @@ exports.publishReport = async (req, res, next) => {
 exports.documents = async (req, res, next) => {
   try {
     const where = req.query.cliente ? { user_id: req.query.cliente } : {};
-    res.json(await Document.findAll({ where, include: [{ model: User, as: 'client', attributes: ['id', 'nombre'] }], order: [['created_at', 'DESC']] }));
+    const documents = await Document.findAll({ where, include: [{ model: User, as: 'client', attributes: ['id', 'nombre'] }], order: [['created_at', 'DESC']] });
+    res.json(await Promise.all(documents.map(storage.signDocument)));
   } catch (error) { next(error); }
 };
 
@@ -219,7 +233,8 @@ exports.createDocument = async (req, res, next) => {
       body: `Agregamos “${document.titulo}” a tu sección de documentos.`,
       buttonText: 'Ver documentos', buttonUrl: `${process.env.CLIENT_URL}/portal/documentos`
     });
-    res.status(201).json(document);
+    await audit(req, 'crear', 'documento', document.id, { user_id: client.id, titulo: document.titulo });
+    res.status(201).json(await storage.signDocument(document));
   } catch (error) { next(error); }
 };
 
@@ -236,7 +251,8 @@ exports.updateDocument = async (req, res, next) => {
       updates.user_id = client.id;
     }
     await document.update(updates);
-    res.json(await Document.findByPk(document.id, { include: [{ model: User, as: 'client', attributes: ['id', 'nombre'] }] }));
+    await audit(req, 'editar', 'documento', document.id, { campos: Object.keys(updates) });
+    res.json(await storage.signDocument(await Document.findByPk(document.id, { include: [{ model: User, as: 'client', attributes: ['id', 'nombre'] }] })));
   } catch (error) { next(error); }
 };
 
@@ -245,7 +261,22 @@ exports.deleteDocument = async (req, res, next) => {
     const document = await Document.findByPk(req.params.id);
     if (!document) throw new AppError('Documento no encontrado.', 404);
     await storage.remove(document.url);
+    await audit(req, 'eliminar', 'documento', document.id, { titulo: document.titulo, user_id: document.user_id });
     await document.destroy();
     res.status(204).end();
+  } catch (error) { next(error); }
+};
+
+exports.auditLogs = async (req, res, next) => {
+  try {
+    const where = {};
+    if (req.query.entidad) where.entidad = req.query.entidad;
+    const logs = await AuditLog.findAll({
+      where,
+      include: [{ model: User, as: 'admin', attributes: ['id', 'nombre', 'email'] }],
+      order: [['created_at', 'DESC']],
+      limit: Math.min(Number(req.query.limit || 100), 250)
+    });
+    res.json(logs);
   } catch (error) { next(error); }
 };

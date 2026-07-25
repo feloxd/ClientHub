@@ -13,6 +13,7 @@ const Notification = require('./notification')(sequelize, DataTypes);
 const RefreshToken = require('./refreshToken')(sequelize, DataTypes);
 const Invitation = require('./invitation')(sequelize, DataTypes);
 const PasswordReset = require('./passwordReset')(sequelize, DataTypes);
+const AuditLog = require('./auditLog')(sequelize, DataTypes);
 
 User.hasMany(Report, { foreignKey: 'user_id', as: 'reports' });
 Report.belongsTo(User, { foreignKey: 'user_id', as: 'client' });
@@ -28,5 +29,7 @@ User.hasMany(Invitation, { foreignKey: 'user_id', as: 'invitations', onDelete: '
 Invitation.belongsTo(User, { foreignKey: 'user_id' });
 User.hasMany(PasswordReset, { foreignKey: 'user_id', as: 'passwordResets', onDelete: 'CASCADE' });
 PasswordReset.belongsTo(User, { foreignKey: 'user_id' });
+User.hasMany(AuditLog, { foreignKey: 'admin_id', as: 'auditLogs', onDelete: 'SET NULL' });
+AuditLog.belongsTo(User, { foreignKey: 'admin_id', as: 'admin' });
 
-module.exports = { sequelize, Sequelize, User, Report, ReportPhoto, Document, Notification, RefreshToken, Invitation, PasswordReset };
+module.exports = { sequelize, Sequelize, User, Report, ReportPhoto, Document, Notification, RefreshToken, Invitation, PasswordReset, AuditLog };

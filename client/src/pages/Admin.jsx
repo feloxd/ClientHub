@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import {
   Activity, Archive, CheckCircle2, ClipboardList, Edit3, FileText, Gauge, ImageIcon,
-  Mail, Plus, Search, Send, Trash2, UploadCloud, Users, X
+  Mail, Plus, Search, Send, ShieldCheck, Trash2, UploadCloud, Users, X
 } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
 import imageCompression from 'browser-image-compression';
@@ -14,7 +14,8 @@ const nav = [
   { to: '/admin', icon: Gauge, label: 'Resumen' },
   { to: '/admin/clientes', icon: Users, label: 'Clientes' },
   { to: '/admin/reportes', icon: ClipboardList, label: 'Reportes' },
-  { to: '/admin/documentos', icon: Archive, label: 'Documentos' }
+  { to: '/admin/documentos', icon: Archive, label: 'Documentos' },
+  { to: '/admin/auditoria', icon: ShieldCheck, label: 'Auditoría' }
 ];
 const serviceTypes = ['Redes y conectividad', 'Videovigilancia', 'Mantenimiento integral', 'Instalación eléctrica', 'Otro'];
 const date = (value) => value ? new Date(`${value}T12:00:00`).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
@@ -252,7 +253,21 @@ function DocumentsAdmin({ data }) {
   </div>;
 }
 
+function AuditPage() {
+  const [logs, setLogs] = useState([]);
+  const [entity, setEntity] = useState('');
+  const [error, setError] = useState('');
+  useEffect(() => {
+    api.get('/admin/auditoria', { params: entity ? { entidad: entity } : {} })
+      .then(({ data }) => { setLogs(data); setError(''); })
+      .catch((requestError) => setError(requestError.response?.data?.error || 'No fue posible cargar la bitácora.'));
+  }, [entity]);
+  return <div><Head kicker="Seguridad y trazabilidad" title="Bitácora administrativa" action={<select className="input w-52" value={entity} onChange={(event) => setEntity(event.target.value)}><option value="">Todas las entidades</option><option value="cliente">Clientes</option><option value="reporte">Reportes</option><option value="documento">Documentos</option></select>}/><ErrorState message={error}/>
+    <div className="card overflow-hidden"><div className="overflow-x-auto"><table className="admin-table"><thead><tr><th>Fecha</th><th>Administrador</th><th>Acción</th><th>Entidad</th><th>Referencia</th><th>IP</th></tr></thead><tbody>{logs.map((log) => <tr key={log.id}><td className="whitespace-nowrap">{new Date(log.createdAt).toLocaleString('es-MX')}</td><td><b className="block text-navy">{log.admin?.nombre || 'Cuenta eliminada'}</b><small className="text-slate-500">{log.admin?.email}</small></td><td className="font-semibold capitalize">{log.accion.replaceAll('_', ' ')}</td><td className="capitalize">{log.entidad}</td><td>#{log.entidad_id || '—'}</td><td className="text-xs text-slate-500">{log.ip || '—'}</td></tr>)}</tbody></table>{!logs.length && !error && <p className="p-12 text-center text-sm text-slate-500">Aún no hay acciones registradas.</p>}</div></div>
+  </div>;
+}
+
 export default function Admin() {
   const data = useAdminData();
-  return <AppShell items={nav} admin><Routes><Route index element={<Dashboard data={data}/>}/><Route path="clientes" element={<Clients data={data}/>}/><Route path="reportes" element={<ReportsAdmin data={data}/>}/><Route path="documentos" element={<DocumentsAdmin data={data}/>}/></Routes></AppShell>;
+  return <AppShell items={nav} admin><Routes><Route index element={<Dashboard data={data}/>}/><Route path="clientes" element={<Clients data={data}/>}/><Route path="reportes" element={<ReportsAdmin data={data}/>}/><Route path="documentos" element={<DocumentsAdmin data={data}/>}/><Route path="auditoria" element={<AuditPage/>}/></Routes></AppShell>;
 }

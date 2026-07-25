@@ -12,6 +12,7 @@ const reportRules = [
 ];
 
 router.get('/estadisticas', admin.stats);
+router.get('/auditoria', admin.auditLogs);
 router.get('/clientes', admin.clients);
 router.post('/clientes', clientRules, validate, admin.createClient);
 router.patch('/clientes/:id', [

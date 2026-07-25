@@ -3,6 +3,9 @@ const bcrypt = require('bcryptjs');
 
 module.exports = {
   async up(queryInterface) {
+    if (process.env.NODE_ENV === 'production' && process.env.ALLOW_DEMO_SEED !== 'true') {
+      throw new Error('El seeder demo está bloqueado en producción. Usa ALLOW_DEMO_SEED=true únicamente si aceptas crear cuentas de prueba.');
+    }
     const now = new Date();
     const adminPassword = await bcrypt.hash(process.env.SEED_ADMIN_PASSWORD || 'AdminDemo2026!', 12);
     const clientPassword = await bcrypt.hash(process.env.SEED_CLIENT_PASSWORD || 'ClienteDemo2026!', 12);

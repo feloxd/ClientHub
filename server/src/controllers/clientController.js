@@ -2,6 +2,7 @@ const { Op } = require('sequelize');
 const { Report, ReportPhoto, Document, Notification } = require('../models');
 const { AppError } = require('../middleware/errors');
 const { reportPdf } = require('../services/pdfService');
+const storage = require('../services/storageService');
 
 const reportInclude = [{ model: ReportPhoto, as: 'photos', separate: true, order: [['tipo', 'ASC'], ['orden', 'ASC']] }];
 
@@ -14,7 +15,7 @@ exports.summary = async (req, res, next) => {
       Report.count({ where: { ...where, visto_por_cliente: false } }),
       Report.findAll({ where, include: reportInclude, order: [['fecha_servicio', 'DESC']], limit: 4 }),
     ]);
-    res.json({ total, completed, unread, recent });
+    res.json({ total, completed, unread, recent: await Promise.all(recent.map(storage.signPhotos)) });
   } catch (error) { next(error); }
 };
 
@@ -27,7 +28,7 @@ exports.reports = async (req, res, next) => {
       ...(req.query.hasta ? { [Op.lte]: req.query.hasta } : {})
     };
     const reports = await Report.findAll({ where, include: reportInclude, order: [['fecha_servicio', 'DESC']] });
-    res.json(reports);
+    res.json(await Promise.all(reports.map(storage.signPhotos)));
   } catch (error) { next(error); }
 };
 
@@ -42,7 +43,7 @@ exports.report = async (req, res, next) => {
         Notification.update({ leida: true }, { where: { user_id: req.user.id, tipo: 'reporte', referencia_id: report.id } })
       ]);
     }
-    res.json(report);
+    res.json(await storage.signPhotos(report));
   } catch (error) { next(error); }
 };
 
@@ -56,14 +57,18 @@ exports.reportPdf = async (req, res, next) => {
       ]
     });
     if (!report) throw new AppError('Reporte no encontrado.', 404);
+    const printable = await storage.signPhotos(report);
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename="reporte-NSI-${report.id}.pdf"`);
-    await reportPdf(report, res);
+    await reportPdf(printable, res);
   } catch (error) { next(error); }
 };
 
 exports.documents = async (req, res, next) => {
-  try { res.json(await Document.findAll({ where: { user_id: req.user.id }, order: [['created_at', 'DESC']] })); }
+  try {
+    const documents = await Document.findAll({ where: { user_id: req.user.id }, order: [['created_at', 'DESC']] });
+    res.json(await Promise.all(documents.map(storage.signDocument)));
+  }
   catch (error) { next(error); }
 };
 

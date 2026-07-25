@@ -6,7 +6,7 @@ Aplicación web completa para una empresa de mantenimiento e instalaciones. Incl
 
 - **Cliente:** React 18, Vite, Tailwind CSS, React Router, Axios
 - **API:** Node.js, Express, Sequelize, MySQL
-- **Seguridad:** JWT de corta duración, rotación de refresh tokens, bcrypt, Helmet, CORS y rate limiting
+- **Seguridad:** JWT de corta duración, refresh token en cookie HttpOnly con rotación, bcrypt, Helmet, CORS, rate limiting y bitácora administrativa
 - **Archivos:** Cloudflare R2 mediante el SDK S3; la base de datos conserva únicamente la URL pública
 - **Correo:** Nodemailer vía SMTP
 - **PDF:** PDFKit
@@ -92,8 +92,8 @@ El cliente solo requiere `VITE_API_URL`, por ejemplo `https://api.tudominio.com/
 
 1. Crea un bucket y habilita un dominio público o dominio personalizado.
 2. Crea un token con permiso de lectura y escritura sobre ese bucket.
-3. Configura `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET` y `R2_PUBLIC_URL`.
-4. Configura CORS en R2 para aceptar `GET` desde el dominio público. Las cargas llegan al backend; las credenciales nunca se exponen al navegador.
+3. Configura `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY` y `R2_BUCKET`.
+4. Mantén el bucket privado. La API genera enlaces de descarga firmados con vigencia de 15 minutos; las credenciales nunca se exponen al navegador.
 
 ## Flujo de acceso
 
@@ -101,7 +101,7 @@ El cliente solo requiere `VITE_API_URL`, por ejemplo `https://api.tudominio.com/
 - El administrador crea un cliente autorizado.
 - La API genera una invitación de un solo uso, guarda únicamente su hash y envía un enlace válido durante 72 horas.
 - El cliente establece una contraseña; bcrypt guarda su hash.
-- El login entrega un access token de 15 minutos y un refresh token rotatorio. Al renovar, el token anterior queda revocado.
+- El login entrega un access token de 15 minutos y guarda el refresh token rotatorio en una cookie `HttpOnly`. Al renovar, el token anterior queda revocado.
 - El middleware valida JWT y rol. Las rutas de cliente siempre limitan consultas al `user_id` autenticado.
 
 ## Despliegue del backend en Railway
@@ -110,7 +110,7 @@ El cliente solo requiere `VITE_API_URL`, por ejemplo `https://api.tudominio.com/
 2. Conecta el repositorio y configura el directorio raíz como `/server`.
 3. Usa `npm start` como comando de inicio.
 4. Agrega las variables de `server/.env.example`. Railway suele exponer la conexión MySQL; asígnala a `DATABASE_URL`.
-5. Ejecuta una vez `npm run db:migrate`. En producción, evita ejecutar el seeder demo.
+5. Ejecuta una vez `npm run db:migrate`. El seeder demo se bloquea automáticamente en producción salvo que se establezca deliberadamente `ALLOW_DEMO_SEED=true`.
 6. Define `CLIENT_URL` con el dominio final de Vercel y revisa que `R2_PUBLIC_URL` sea público.
 7. El endpoint `GET /api/salud` puede utilizarse como health check.
 

@@ -6,6 +6,18 @@ const { hash, signAccess, issueRefresh, verifyRefresh } = require('../services/t
 const mail = require('../services/mailService');
 
 const publicUser = (u) => ({ id: u.id, nombre: u.nombre, email: u.email, rol: u.rol });
+const refreshCookieOptions = () => ({
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+  path: '/api/auth',
+  maxAge: Number(process.env.REFRESH_TOKEN_TTL_DAYS || 7) * 86400000
+});
+const setRefreshCookie = (res, token) => res.cookie('nexo_refresh', token, refreshCookieOptions());
+const clearRefreshCookie = (res) => {
+  const { maxAge: _maxAge, ...options } = refreshCookieOptions();
+  res.clearCookie('nexo_refresh', options);
+};
 
 exports.login = async (req, res, next) => {
   try {
@@ -16,13 +28,15 @@ exports.login = async (req, res, next) => {
     if (portal && user.rol !== portal) throw new AppError(`Esta cuenta no tiene acceso al portal de ${portal === 'admin' ? 'administración' : 'clientes'}.`, 403);
     const accessToken = signAccess(user);
     const refreshToken = await issueRefresh(user);
-    res.json({ accessToken, refreshToken, user: publicUser(user) });
+    setRefreshCookie(res, refreshToken);
+    res.json({ accessToken, user: publicUser(user) });
   } catch (error) { next(error); }
 };
 
 exports.refresh = async (req, res, next) => {
   try {
-    const current = req.body.refreshToken;
+    const current = req.cookies.nexo_refresh;
+    if (!current) throw new AppError('No hay una sesión disponible para renovar.', 401);
     verifyRefresh(current);
     const record = await RefreshToken.findOne({ where: { token_hash: hash(current), revocado: false } });
     if (!record || record.expira_en < new Date()) throw new AppError('La sesión ya no se puede renovar.', 401);
@@ -30,7 +44,8 @@ exports.refresh = async (req, res, next) => {
     if (!user?.activo) throw new AppError('La cuenta no está disponible.', 401);
     record.revocado = true;
     await record.save();
-    res.json({ accessToken: signAccess(user), refreshToken: await issueRefresh(user), user: publicUser(user) });
+    setRefreshCookie(res, await issueRefresh(user));
+    res.json({ accessToken: signAccess(user), user: publicUser(user) });
   } catch (error) {
     if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') return next(new AppError('El token de renovación no es válido.', 401));
     next(error);
@@ -39,7 +54,8 @@ exports.refresh = async (req, res, next) => {
 
 exports.logout = async (req, res, next) => {
   try {
-    if (req.body.refreshToken) await RefreshToken.update({ revocado: true }, { where: { token_hash: hash(req.body.refreshToken) } });
+    if (req.cookies.nexo_refresh) await RefreshToken.update({ revocado: true }, { where: { token_hash: hash(req.cookies.nexo_refresh) } });
+    clearRefreshCookie(res);
     res.status(204).end();
   } catch (error) { next(error); }
 };
