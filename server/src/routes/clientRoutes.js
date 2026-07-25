@@ -7,4 +7,5 @@ router.get('/reportes/:id/pdf', client.reportPdf);
 router.get('/documentos', client.documents);
 router.get('/notificaciones', client.notifications);
 router.patch('/notificaciones/leidas', client.readNotifications);
+router.patch('/notificaciones/:id/leida', client.readNotification);
 module.exports = router;

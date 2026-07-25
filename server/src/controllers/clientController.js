@@ -48,11 +48,17 @@ exports.report = async (req, res, next) => {
 
 exports.reportPdf = async (req, res, next) => {
   try {
-    const report = await Report.findOne({ where: { id: req.params.id, user_id: req.user.id, publicado: true } });
+    const report = await Report.findOne({
+      where: { id: req.params.id, user_id: req.user.id, publicado: true },
+      include: [
+        { association: 'client', attributes: ['nombre', 'email'] },
+        ...reportInclude
+      ]
+    });
     if (!report) throw new AppError('Reporte no encontrado.', 404);
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename="reporte-NSI-${report.id}.pdf"`);
-    reportPdf(report, res);
+    await reportPdf(report, res);
   } catch (error) { next(error); }
 };
 
@@ -69,6 +75,17 @@ exports.notifications = async (req, res, next) => {
 exports.readNotifications = async (req, res, next) => {
   try {
     await Notification.update({ leida: true }, { where: { user_id: req.user.id, leida: false } });
+    res.status(204).end();
+  } catch (error) { next(error); }
+};
+
+exports.readNotification = async (req, res, next) => {
+  try {
+    const [updated] = await Notification.update(
+      { leida: true },
+      { where: { id: req.params.id, user_id: req.user.id } }
+    );
+    if (!updated) throw new AppError('Notificación no encontrada.', 404);
     res.status(204).end();
   } catch (error) { next(error); }
 };

@@ -68,6 +68,10 @@ exports.updateClient = async (req, res, next) => {
   try {
     const user = await User.findOne({ where: { id: req.params.id, rol: 'cliente' } });
     if (!user) throw new AppError('Cliente no encontrado.', 404);
+    if (req.body.email) {
+      const duplicate = await User.findOne({ where: { email: req.body.email.toLowerCase(), id: { [Op.ne]: user.id } } });
+      if (duplicate) throw new AppError('Ya existe una cuenta con ese correo.', 409);
+    }
     await user.update({ nombre: req.body.nombre ?? user.nombre, email: req.body.email?.toLowerCase() ?? user.email, activo: req.body.activo ?? user.activo });
     res.json(user);
   } catch (error) { next(error); }
@@ -75,8 +79,19 @@ exports.updateClient = async (req, res, next) => {
 
 exports.deleteClient = async (req, res, next) => {
   try {
-    const user = await User.findOne({ where: { id: req.params.id, rol: 'cliente' } });
+    const user = await User.findOne({
+      where: { id: req.params.id, rol: 'cliente' },
+      include: [
+        { model: Report, as: 'reports', include: [{ model: ReportPhoto, as: 'photos' }] },
+        { model: Document, as: 'documents' }
+      ]
+    });
     if (!user) throw new AppError('Cliente no encontrado.', 404);
+    const urls = [
+      ...user.reports.flatMap((report) => report.photos.map((photo) => photo.url)),
+      ...user.documents.map((document) => document.url)
+    ];
+    await Promise.all(urls.map((url) => storage.remove(url)));
     await user.destroy();
     res.status(204).end();
   } catch (error) { next(error); }
@@ -97,6 +112,10 @@ exports.reports = async (req, res, next) => {
     if (req.query.cliente) where.user_id = req.query.cliente;
     if (req.query.estatus) where.estatus = req.query.estatus;
     if (req.query.tipo) where.tipo_servicio = req.query.tipo;
+    if (req.query.desde || req.query.hasta) where.fecha_servicio = {
+      ...(req.query.desde ? { [Op.gte]: req.query.desde } : {}),
+      ...(req.query.hasta ? { [Op.lte]: req.query.hasta } : {})
+    };
     if (req.query.q) where[Op.or] = [
       { titulo: { [Op.like]: `%${req.query.q}%` } },
       { descripcion: { [Op.like]: `%${req.query.q}%` } }
@@ -118,6 +137,10 @@ exports.updateReport = async (req, res, next) => {
   try {
     const report = await Report.findByPk(req.params.id);
     if (!report) throw new AppError('Reporte no encontrado.', 404);
+    if (req.body.user_id) {
+      const client = await User.findOne({ where: { id: req.body.user_id, rol: 'cliente' } });
+      if (!client) throw new AppError('El cliente seleccionado no existe.', 404);
+    }
     await report.update(req.body);
     res.json(await Report.findByPk(report.id, { include: reportInclude }));
   } catch (error) { next(error); }
@@ -197,6 +220,23 @@ exports.createDocument = async (req, res, next) => {
       buttonText: 'Ver documentos', buttonUrl: `${process.env.CLIENT_URL}/portal/documentos`
     });
     res.status(201).json(document);
+  } catch (error) { next(error); }
+};
+
+exports.updateDocument = async (req, res, next) => {
+  try {
+    const document = await Document.findByPk(req.params.id);
+    if (!document) throw new AppError('Documento no encontrado.', 404);
+    const updates = {};
+    if (req.body.titulo !== undefined) updates.titulo = req.body.titulo;
+    if (req.body.categoria !== undefined) updates.categoria = req.body.categoria;
+    if (req.body.user_id !== undefined) {
+      const client = await User.findOne({ where: { id: req.body.user_id, rol: 'cliente' } });
+      if (!client) throw new AppError('Cliente no encontrado.', 404);
+      updates.user_id = client.id;
+    }
+    await document.update(updates);
+    res.json(await Document.findByPk(document.id, { include: [{ model: User, as: 'client', attributes: ['id', 'nombre'] }] }));
   } catch (error) { next(error); }
 };
 

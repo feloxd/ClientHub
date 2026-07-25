@@ -17,4 +17,9 @@ router.post('/accept-invitation', [
   body('token').isString().isLength({ min: 32 }),
   body('password').isStrongPassword({ minLength: 10, minUppercase: 1, minLowercase: 1, minNumbers: 1, minSymbols: 0 })
 ], validate, auth.acceptInvitation);
+router.post('/request-password-reset', [body('email').isEmail().normalizeEmail()], validate, auth.requestPasswordReset);
+router.post('/reset-password', [
+  body('token').isString().isLength({ min: 32 }),
+  body('password').isStrongPassword({ minLength: 10, minUppercase: 1, minLowercase: 1, minNumbers: 1, minSymbols: 0 })
+], validate, auth.resetPassword);
 module.exports = router;

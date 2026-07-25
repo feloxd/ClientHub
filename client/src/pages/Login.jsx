@@ -28,6 +28,7 @@ export default function Login({ portal }) {
         <form onSubmit={submit} className="mt-9 space-y-5">
           <label><span className="label">Correo electrónico</span><input className="input" type="email" name="email" required autoComplete="email" placeholder={admin ? 'admin@nexo.mx' : 'cliente@nexo.mx'}/></label>
           <label><span className="label">Contraseña</span><span className="relative block"><input className="input pr-12" type={show ? 'text' : 'password'} name="password" required minLength={8} autoComplete="current-password" placeholder="••••••••••"/><button type="button" onClick={() => setShow(!show)} className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400" aria-label="Mostrar contraseña">{show ? <EyeOff size={18}/> : <Eye size={18}/>}</button></span></label>
+          <div className="-mt-2 text-right"><Link to="/recuperar-contrasena" className="text-xs font-bold text-brand-600 hover:text-brand-700">¿Olvidaste tu contraseña?</Link></div>
           {error && <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
           <button className="btn-primary w-full" disabled={loading}>{loading ? 'Verificando…' : 'Iniciar sesión'} <ArrowRight size={17}/></button>
         </form>

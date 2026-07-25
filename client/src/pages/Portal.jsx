@@ -4,7 +4,6 @@ import { ArrowLeft, CalendarDays, CheckCircle2, ClipboardList, Download, Eye, Fi
 import AppShell from '../components/AppShell';
 import Status from '../components/Status';
 import api from '../lib/api';
-import { demoDocs, demoReports } from '../data/demo';
 
 const nav = [
   { to: '/portal', icon: Gauge, label: 'Resumen' },
@@ -17,13 +16,14 @@ function usePortalData() {
   const [reports, setReports] = useState([]);
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   useEffect(() => {
     Promise.all([api.get('/cliente/reportes'), api.get('/cliente/documentos')])
-      .then(([r,d]) => { setReports(r.data); setDocuments(d.data); })
-      .catch(() => { setReports(demoReports); setDocuments(demoDocs); })
+      .then(([r,d]) => { setReports(r.data); setDocuments(d.data); setError(''); })
+      .catch((requestError) => setError(requestError.response?.data?.error || 'No fue posible cargar tu información. Intenta nuevamente.'))
       .finally(() => setLoading(false));
   }, []);
-  return { reports, documents, loading };
+  return { reports, documents, loading, error };
 }
 
 function Heading({ eyebrow, title, text, action }) {
@@ -52,11 +52,11 @@ function Summary({ reports, documents, loading }) {
 }
 
 function Reports({ reports }) {
-  const [q,setQ]=useState(''); const [type,setType]=useState('');
+  const [q,setQ]=useState(''); const [type,setType]=useState(''); const [from,setFrom]=useState(''); const [to,setTo]=useState('');
   const types=[...new Set(reports.map(r=>r.tipo_servicio))];
-  const filtered=useMemo(()=>reports.filter(r=>(!q||r.titulo.toLowerCase().includes(q.toLowerCase()))&&(!type||r.tipo_servicio===type)),[reports,q,type]);
+  const filtered=useMemo(()=>reports.filter(r=>(!q||r.titulo.toLowerCase().includes(q.toLowerCase()))&&(!type||r.tipo_servicio===type)&&(!from||r.fecha_servicio>=from)&&(!to||r.fecha_servicio<=to)),[reports,q,type,from,to]);
   return <div className="reveal"><Heading eyebrow="Historial de servicio" title="Reportes de trabajo" text="Consulta la evidencia y el detalle de cada intervención."/>
-    <div className="card mb-5 flex flex-col gap-3 p-4 sm:flex-row"><label className="relative flex-1"><Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={17}/><input value={q} onChange={e=>setQ(e.target.value)} className="input pl-10" placeholder="Buscar reporte..."/></label><label className="relative sm:w-64"><Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16}/><select value={type} onChange={e=>setType(e.target.value)} className="input pl-10"><option value="">Todos los servicios</option>{types.map(t=><option key={t}>{t}</option>)}</select></label></div>
+    <div className="card mb-5 grid gap-3 p-4 md:grid-cols-2 xl:grid-cols-4"><label className="relative xl:col-span-1"><Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={17}/><input value={q} onChange={e=>setQ(e.target.value)} className="input pl-10" placeholder="Buscar reporte..."/></label><label className="relative"><Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16}/><select value={type} onChange={e=>setType(e.target.value)} className="input pl-10"><option value="">Todos los servicios</option>{types.map(t=><option key={t}>{t}</option>)}</select></label><label><span className="sr-only">Desde</span><input type="date" value={from} onChange={e=>setFrom(e.target.value)} className="input" title="Fecha desde"/></label><label><span className="sr-only">Hasta</span><input type="date" value={to} onChange={e=>setTo(e.target.value)} className="input" title="Fecha hasta"/></label></div>
     <div className="grid gap-4">{filtered.map(r=><Link key={r.id} to={`/portal/reportes/${r.id}`} className="card group grid gap-4 p-5 transition hover:border-brand-500 sm:grid-cols-[auto_1fr_auto] sm:items-center">
       <div className="relative h-24 w-full overflow-hidden rounded-lg bg-slate-100 sm:w-32">{r.photos?.[0]?<img src={r.photos[0].url} alt="" className="h-full w-full object-cover transition group-hover:scale-105"/>:<ImageIcon className="absolute inset-0 m-auto text-slate-300"/>}{!r.visto_por_cliente&&<span className="absolute left-2 top-2 rounded bg-cyan px-2 py-1 text-[9px] font-black uppercase text-navy">Nuevo</span>}</div>
       <div><div className="flex flex-wrap items-center gap-2"><h2 className="font-display text-lg font-bold text-navy">{r.titulo}</h2><Status value={r.estatus}/></div><p className="mt-2 text-sm text-slate-500">{r.tipo_servicio}</p><div className="mt-3 flex flex-wrap gap-4 text-xs text-slate-500"><span className="flex items-center gap-1.5"><CalendarDays size={14}/>{date(r.fecha_servicio)}</span><span>Técnico: {r.tecnico||'Por asignar'}</span></div></div>
@@ -89,5 +89,5 @@ function Documents({ documents }) {
 
 export default function Portal() {
   const data=usePortalData(); const unread=data.reports.filter(r=>!r.visto_por_cliente).length;
-  return <AppShell items={nav} unread={unread}><Routes><Route index element={<Summary {...data}/>}/><Route path="reportes" element={<Reports reports={data.reports}/>}/><Route path="reportes/:id" element={<ReportDetail reports={data.reports}/>}/><Route path="documentos" element={<Documents documents={data.documents}/>}/></Routes></AppShell>;
+  return <AppShell items={nav} unread={unread}>{data.error && <div className="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">{data.error}</div>}<Routes><Route index element={<Summary {...data}/>}/><Route path="reportes" element={<Reports reports={data.reports}/>}/><Route path="reportes/:id" element={<ReportDetail reports={data.reports}/>}/><Route path="documentos" element={<Documents documents={data.documents}/>}/></Routes></AppShell>;
 }

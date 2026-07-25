@@ -1,7 +1,9 @@
 const bcrypt = require('bcryptjs');
-const { User, RefreshToken, Invitation } = require('../models');
+const crypto = require('crypto');
+const { User, RefreshToken, Invitation, PasswordReset } = require('../models');
 const { AppError } = require('../middleware/errors');
 const { hash, signAccess, issueRefresh, verifyRefresh } = require('../services/tokenService');
+const mail = require('../services/mailService');
 
 const publicUser = (u) => ({ id: u.id, nombre: u.nombre, email: u.email, rol: u.rol });
 
@@ -52,5 +54,42 @@ exports.acceptInvitation = async (req, res, next) => {
     invitation.usada = true;
     await Promise.all([user.save(), invitation.save()]);
     res.json({ message: 'Contraseña establecida. Ya puedes iniciar sesión.' });
+  } catch (error) { next(error); }
+};
+
+exports.requestPasswordReset = async (req, res, next) => {
+  try {
+    const user = await User.unscoped().findOne({ where: { email: req.body.email.toLowerCase(), activo: true } });
+    if (user) {
+      const token = crypto.randomBytes(32).toString('hex');
+      await PasswordReset.update({ usado: true }, { where: { user_id: user.id, usado: false } });
+      await PasswordReset.create({ user_id: user.id, token_hash: hash(token), expira_en: new Date(Date.now() + 60 * 60 * 1000) });
+      await mail.send({
+        to: user.email,
+        subject: 'Restablece tu contraseña de Nexo',
+        title: 'Solicitud de nueva contraseña',
+        body: 'Recibimos una solicitud para cambiar tu contraseña. El enlace estará disponible durante 60 minutos.',
+        buttonText: 'Crear nueva contraseña',
+        buttonUrl: `${process.env.CLIENT_URL}/restablecer-contrasena?token=${token}`
+      });
+    }
+    res.json({ message: 'Si el correo pertenece a una cuenta activa, enviaremos las instrucciones.' });
+  } catch (error) { next(error); }
+};
+
+exports.resetPassword = async (req, res, next) => {
+  try {
+    const reset = await PasswordReset.findOne({ where: { token_hash: hash(req.body.token), usado: false } });
+    if (!reset || reset.expira_en < new Date()) throw new AppError('El enlace expiró o ya fue utilizado.', 410);
+    const user = await User.unscoped().findByPk(reset.user_id);
+    if (!user?.activo) throw new AppError('La cuenta no está disponible.', 403);
+    user.password_hash = await bcrypt.hash(req.body.password, 12);
+    reset.usado = true;
+    await Promise.all([
+      user.save(),
+      reset.save(),
+      RefreshToken.update({ revocado: true }, { where: { user_id: user.id, revocado: false } })
+    ]);
+    res.json({ message: 'Contraseña actualizada. Ya puedes iniciar sesión.' });
   } catch (error) { next(error); }
 };

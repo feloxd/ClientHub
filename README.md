@@ -126,6 +126,7 @@ El cliente solo requiere `VITE_API_URL`, por ejemplo `https://api.tudominio.com/
 ## Endpoints principales
 
 - `POST /api/auth/login`, `/refresh`, `/logout`, `/accept-invitation`
+- `POST /api/auth/request-password-reset`, `/reset-password`
 - `POST /api/publico/contacto`
 - `GET /api/cliente/resumen`, `/reportes`, `/reportes/:id`, `/reportes/:id/pdf`, `/documentos`, `/notificaciones`
 - CRUD en `/api/admin/clientes`, `/reportes` y `/documentos`
