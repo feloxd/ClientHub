@@ -1,0 +1,10 @@
+const router = require('express').Router();
+const client = require('../controllers/clientController');
+router.get('/resumen', client.summary);
+router.get('/reportes', client.reports);
+router.get('/reportes/:id', client.report);
+router.get('/reportes/:id/pdf', client.reportPdf);
+router.get('/documentos', client.documents);
+router.get('/notificaciones', client.notifications);
+router.patch('/notificaciones/leidas', client.readNotifications);
+module.exports = router;
