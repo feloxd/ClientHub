@@ -11,14 +11,14 @@ import Status from '../components/Status';
 import api from '../lib/api';
 
 const nav = [
-  { to: '/admin', icon: Gauge, label: 'Resumen' },
-  { to: '/admin/clientes', icon: Users, label: 'Clientes' },
-  { to: '/admin/reportes', icon: ClipboardList, label: 'Reportes' },
-  { to: '/admin/documentos', icon: Archive, label: 'Documentos' },
-  { to: '/admin/auditoria', icon: ShieldCheck, label: 'Auditoría' }
+  { to: '/admin', icon: Gauge, label: 'Overview' },
+  { to: '/admin/clientes', icon: Users, label: 'Clients' },
+  { to: '/admin/reportes', icon: ClipboardList, label: 'Service requests' },
+  { to: '/admin/documentos', icon: Archive, label: 'Documents' },
+  { to: '/admin/auditoria', icon: ShieldCheck, label: 'Activity log' }
 ];
-const serviceTypes = ['Redes y conectividad', 'Videovigilancia', 'Mantenimiento integral', 'Instalación eléctrica', 'Otro'];
-const date = (value) => value ? new Date(`${value}T12:00:00`).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
+const serviceTypes = ['HVAC repair', 'Fan coil service', 'Preventive maintenance', 'Installation or replacement', 'Other'];
+const date = (value) => value ? new Date(`${value}T12:00:00`).toLocaleDateString('en-CA', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
 
 function useAdminData() {
   const [clients, setClients] = useState([]);
@@ -56,15 +56,15 @@ function ErrorState({ message, retry }) {
 
 function Dashboard({ data }) {
   const stats = [
-    ['Clientes activos', data.clients.filter((client) => client.activo).length, Users, 'bg-blue-50 text-blue-600'],
-    ['Reportes totales', data.reports.length, ClipboardList, 'bg-violet-50 text-violet-600'],
-    ['Por publicar', data.reports.filter((report) => !report.publicado).length, Send, 'bg-amber-50 text-amber-600'],
-    ['Completados', data.reports.filter((report) => report.estatus === 'completado').length, CheckCircle2, 'bg-emerald-50 text-emerald-600']
+    ['Active clients', data.clients.filter((client) => client.activo).length, Users, 'bg-blue-50 text-blue-600'],
+    ['Service requests', data.reports.length, ClipboardList, 'bg-violet-50 text-violet-600'],
+    ['Awaiting approval', data.reports.filter((report) => !report.publicado).length, Send, 'bg-amber-50 text-amber-600'],
+    ['Completed', data.reports.filter((report) => report.estatus === 'completado').length, CheckCircle2, 'bg-emerald-50 text-emerald-600']
   ];
-  return <div><Head kicker="Vista general" title="Panel operativo"/><ErrorState message={data.error} retry={data.reload}/>
+  return <div><Head kicker="At a glance" title="Operations dashboard"/><ErrorState message={data.error} retry={data.reload}/>
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{stats.map(([label, value, Icon, color]) => <div className="card p-5" key={label}><div className={`grid h-10 w-10 place-items-center rounded-lg ${color}`}><Icon size={19}/></div><p className="mt-5 font-display text-3xl font-extrabold text-navy">{data.loading ? '—' : value}</p><p className="mt-1 text-xs font-semibold text-slate-500">{label}</p></div>)}</div>
-    <div className="mt-7 grid gap-6 xl:grid-cols-[1.5fr_.5fr]"><section className="card overflow-hidden"><div className="flex items-center justify-between border-b border-line p-5"><h2 className="font-display font-bold text-navy">Actividad reciente</h2><Link to="/admin/reportes" className="text-xs font-bold text-brand-600">Ver todo →</Link></div>{data.reports.slice(0, 4).map((report) => <div className="flex items-center gap-4 border-b border-line px-5 py-4 last:border-0" key={report.id}><span className="grid h-10 w-10 place-items-center rounded-lg bg-brand-50 text-brand-600"><Activity size={18}/></span><div className="min-w-0 flex-1"><b className="block truncate text-sm text-navy">{report.titulo}</b><small className="text-slate-500">{report.client?.nombre} · {date(report.fecha_servicio)}</small></div><Status value={report.estatus}/></div>)}</section>
-      <aside className="rounded-2xl bg-navy p-6 text-white"><UploadCloud className="text-cyan"/><h2 className="mt-8 font-display text-xl font-bold">Trabajo pendiente</h2><p className="mt-3 text-sm leading-6 text-blue-100">{data.reports.filter((report) => !report.publicado).length} reportes están en preparación antes de avisar al cliente.</p><Link to="/admin/reportes" className="mt-6 inline-block text-sm font-bold text-cyan">Revisar reportes →</Link></aside></div>
+    <div className="mt-7 grid gap-6 xl:grid-cols-[1.5fr_.5fr]"><section className="card overflow-hidden"><div className="flex items-center justify-between border-b border-line p-5"><h2 className="font-display font-bold text-navy">Recent activity</h2><Link to="/admin/reportes" className="text-xs font-bold text-brand-600">View all →</Link></div>{data.reports.slice(0, 4).map((report) => <div className="flex items-center gap-4 border-b border-line px-5 py-4 last:border-0" key={report.id}><span className="grid h-10 w-10 place-items-center rounded-lg bg-brand-50 text-brand-600"><Activity size={18}/></span><div className="min-w-0 flex-1"><b className="block truncate text-sm text-navy">{report.titulo}</b><small className="text-slate-500">{report.client?.nombre} · {date(report.fecha_servicio)}</small></div><Status value={report.estatus}/></div>)}</section>
+      <aside className="rounded-2xl bg-navy p-6 text-white"><UploadCloud className="text-cyan"/><h2 className="mt-8 font-display text-xl font-bold">Work queue</h2><p className="mt-3 text-sm leading-6 text-blue-100">{data.reports.filter((report) => !report.publicado).length} service requests are being prepared before the client is notified.</p><Link to="/admin/reportes" className="mt-6 inline-block text-sm font-bold text-cyan">Review requests →</Link></aside></div>
   </div>;
 }
 

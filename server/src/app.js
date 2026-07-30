@@ -25,7 +25,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 if (process.env.NODE_ENV !== 'test') app.use(morgan('dev'));
 
-app.get('/api/salud', (_req, res) => res.json({ status: 'ok', service: 'Nexo API', timestamp: new Date().toISOString() }));
+app.get('/api/salud', (_req, res) => res.json({ status: 'ok', service: 'Seals HVAC API', timestamp: new Date().toISOString() }));
 app.use('/api/publico', require('./routes/publicRoutes'));
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/cliente', authenticate, authorize('cliente'), require('./routes/clientRoutes'));

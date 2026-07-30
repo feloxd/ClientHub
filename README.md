@@ -1,4 +1,4 @@
-# Nexo Servicio Integral
+# Seals HVAC Client Experience
 
 Aplicación web completa para una empresa de mantenimiento e instalaciones. Incluye un sitio público, portal privado de clientes y panel administrativo.
 
@@ -70,8 +70,8 @@ La web estará en `http://localhost:5173` y la API en `http://localhost:3001/api
 
 | Portal | Correo | Contraseña |
 |---|---|---|
-| Administrador | `admin@nexo.mx` | `AdminDemo2026!` |
-| Cliente | `cliente@nexo.mx` | `ClienteDemo2026!` |
+| Administrator | `admin@sealshvac.ca` | `SealsAdmin2026!` |
+| Client | `client@sealshvac.ca` | `SealsClient2026!` |
 
 Las credenciales se pueden cambiar antes de ejecutar el seeder con `SEED_ADMIN_*` y `SEED_CLIENT_*`. No uses las contraseñas demo en producción.
 

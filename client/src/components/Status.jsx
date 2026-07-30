@@ -1,4 +1,4 @@
-export const statusLabel = { borrador: 'Borrador', programado: 'Programado', en_proceso: 'En proceso', completado: 'Completado', cancelado: 'Cancelado' };
+export const statusLabel = { borrador: 'Draft', programado: 'Scheduled', en_proceso: 'In progress', completado: 'Completed', cancelado: 'Cancelled' };
 export default function Status({ value }) {
   const colors = {
     completado: 'bg-emerald-50 text-emerald-700 ring-emerald-200',

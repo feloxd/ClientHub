@@ -82,7 +82,7 @@ exports.requestPasswordReset = async (req, res, next) => {
       await PasswordReset.create({ user_id: user.id, token_hash: hash(token), expira_en: new Date(Date.now() + 60 * 60 * 1000) });
       await mail.send({
         to: user.email,
-        subject: 'Restablece tu contraseña de Nexo',
+        subject: 'Reset your Seals HVAC password',
         title: 'Solicitud de nueva contraseña',
         body: 'Recibimos una solicitud para cambiar tu contraseña. El enlace estará disponible durante 60 minutos.',
         buttonText: 'Crear nueva contraseña',

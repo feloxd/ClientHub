@@ -13,7 +13,8 @@ export default {
       },
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        display: ['Manrope', 'Inter', 'ui-sans-serif', 'system-ui']
+        display: ['Manrope', 'Inter', 'ui-sans-serif', 'system-ui'],
+        serif: ['Cormorant Garamond', 'Georgia', 'serif']
       },
       boxShadow: {
         soft: '0 20px 55px rgba(13, 52, 82, .10)',

@@ -7,7 +7,7 @@ async function start() {
   try {
     validateEnvironment();
     await sequelize.authenticate();
-    app.listen(port, () => console.log(`Nexo API disponible en el puerto ${port}`));
+    app.listen(port, () => console.log(`Seals HVAC API available on port ${port}`));
   } catch (error) {
     console.error('No se pudo conectar con MySQL:', error.message);
     process.exit(1);

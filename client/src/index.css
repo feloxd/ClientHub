@@ -11,8 +11,15 @@
 
 @layer components {
   .container-site { @apply mx-auto w-full max-w-[1180px] px-5 md:px-8; }
+  .container-wide { @apply mx-auto w-full max-w-[1380px] px-5 md:px-9 xl:px-12; }
   .eyebrow { @apply mb-3 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[.18em] text-brand-600; }
   .section-title { @apply font-display text-3xl font-extrabold leading-tight tracking-[-.03em] text-navy md:text-5xl; }
+  .kicker { @apply inline-flex items-center gap-3 text-[10px] font-extrabold uppercase tracking-[.24em] text-brand-600; }
+  .premium-title { @apply font-display text-4xl font-extrabold leading-[1.02] tracking-[-.045em] text-navy sm:text-6xl; }
+  .dark-label { @apply mb-2 block text-[10px] font-bold uppercase tracking-[.18em] text-white/45; }
+  .dark-input { @apply w-full rounded-xl border border-white/15 bg-white/[.07] px-4 py-3.5 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-cyan focus:bg-white/10 focus:ring-4 focus:ring-cyan/10; }
+  .dark-input option { @apply text-navy; }
+  .footer-title { @apply text-[10px] font-extrabold uppercase tracking-[.2em] text-cyan; }
   .btn-primary { @apply inline-flex items-center justify-center gap-2 rounded-lg bg-brand-600 px-5 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-brand-700 hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-brand-100 disabled:pointer-events-none disabled:opacity-60; }
   .btn-secondary { @apply inline-flex items-center justify-center gap-2 rounded-lg border border-line bg-white px-5 py-3 text-sm font-bold text-navy transition hover:-translate-y-0.5 hover:border-brand-500 hover:text-brand-700 focus:outline-none focus:ring-4 focus:ring-brand-100; }
   .card { @apply rounded-2xl border border-line bg-white shadow-card; }
@@ -26,6 +33,10 @@
 .hero-grid {
   background-image: linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
   background-size: 44px 44px;
+}
+.hero-noise {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
+  mix-blend-mode: soft-light;
 }
 .noise { background-image: radial-gradient(rgba(255,255,255,.18) 1px, transparent 1px); background-size: 18px 18px; }
 .reveal { animation: reveal .55s ease both; }

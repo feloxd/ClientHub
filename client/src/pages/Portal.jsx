@@ -6,11 +6,11 @@ import Status from '../components/Status';
 import api from '../lib/api';
 
 const nav = [
-  { to: '/portal', icon: Gauge, label: 'Resumen' },
-  { to: '/portal/reportes', icon: ClipboardList, label: 'Reportes' },
-  { to: '/portal/documentos', icon: FolderOpen, label: 'Documentos' }
+  { to: '/portal', icon: Gauge, label: 'Overview' },
+  { to: '/portal/reportes', icon: ClipboardList, label: 'Service reports' },
+  { to: '/portal/documentos', icon: FolderOpen, label: 'Documents' }
 ];
-const date = (value) => new Date(`${value}T12:00:00`).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' });
+const date = (value) => new Date(`${value}T12:00:00`).toLocaleDateString('en-CA', { day: 'numeric', month: 'short', year: 'numeric' });
 
 function usePortalData() {
   const [reports, setReports] = useState([]);
@@ -32,21 +32,21 @@ function Heading({ eyebrow, title, text, action }) {
 
 function Summary({ reports, documents, loading }) {
   const latest = reports.slice(0, 3);
-  return <div className="reveal"><Heading eyebrow="Tu operación al día" title="Hola, bienvenido" text="Aquí tienes un resumen de tus servicios y documentos."/>
+  return <div className="reveal"><Heading eyebrow="Your service at a glance" title="Welcome back" text="Here is the latest activity for your properties and service requests."/>
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
       {[
-        ['Reportes totales',reports.length,ClipboardList,'bg-blue-50 text-blue-600'],
-        ['Servicios completados',reports.filter(r=>r.estatus==='completado').length,CheckCircle2,'bg-emerald-50 text-emerald-600'],
-        ['Reportes nuevos',reports.filter(r=>!r.visto_por_cliente).length,Eye,'bg-cyan/15 text-brand-600'],
-        ['Documentos',documents.length,FileCheck2,'bg-violet-50 text-violet-600']
+        ['Service reports',reports.length,ClipboardList,'bg-blue-50 text-blue-600'],
+        ['Completed services',reports.filter(r=>r.estatus==='completado').length,CheckCircle2,'bg-emerald-50 text-emerald-600'],
+        ['New updates',reports.filter(r=>!r.visto_por_cliente).length,Eye,'bg-cyan/15 text-brand-600'],
+        ['Documents',documents.length,FileCheck2,'bg-violet-50 text-violet-600']
       ].map(([label,value,Icon,color])=><div className="card p-5" key={label}><div className={`grid h-10 w-10 place-items-center rounded-lg ${color}`}><Icon size={20}/></div><p className="mt-5 font-display text-3xl font-extrabold text-navy">{loading ? '—' : value}</p><p className="mt-1 text-xs font-semibold text-slate-500">{label}</p></div>)}
     </div>
     <div className="mt-8 grid gap-6 xl:grid-cols-[1.45fr_.55fr]">
-      <section className="card overflow-hidden"><div className="flex items-center justify-between border-b border-line px-6 py-5"><h2 className="font-display font-bold text-navy">Reportes recientes</h2><Link to="/portal/reportes" className="text-xs font-bold text-brand-600">Ver todos →</Link></div>
+      <section className="card overflow-hidden"><div className="flex items-center justify-between border-b border-line px-6 py-5"><h2 className="font-display font-bold text-navy">Recent service</h2><Link to="/portal/reportes" className="text-xs font-bold text-brand-600">View all →</Link></div>
         <div>{latest.map(r=><Link to={`/portal/reportes/${r.id}`} key={r.id} className="flex items-center gap-4 border-b border-line px-6 py-5 last:border-0 hover:bg-cloud">
           <span className="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-brand-50 text-brand-600"><ClipboardList size={20}/></span><span className="min-w-0 flex-1"><span className="flex items-center gap-2"><b className="truncate text-sm text-navy">{r.titulo}</b>{!r.visto_por_cliente&&<small className="rounded bg-cyan px-1.5 py-0.5 text-[9px] font-black uppercase text-navy">Nuevo</small>}</span><small className="mt-1 block text-slate-500">{date(r.fecha_servicio)} · {r.tecnico}</small></span><Status value={r.estatus}/></Link>)}</div>
       </section>
-      <aside className="relative overflow-hidden rounded-2xl bg-navy p-6 text-white shadow-card"><div className="noise absolute inset-0 opacity-20"/><div className="relative"><FileText className="text-cyan"/><h2 className="mt-12 font-display text-xl font-bold">Tu expediente, siempre disponible.</h2><p className="mt-3 text-sm leading-6 text-blue-100">Consulta pólizas, seguros y certificaciones desde cualquier dispositivo.</p><Link to="/portal/documentos" className="mt-6 inline-flex text-sm font-bold text-cyan">Ver documentos →</Link></div></aside>
+      <aside className="relative overflow-hidden rounded-2xl bg-navy p-6 text-white shadow-card"><div className="noise absolute inset-0 opacity-20"/><div className="relative"><FileText className="text-cyan"/><h2 className="mt-12 font-display text-xl font-bold">Your service history, always available.</h2><p className="mt-3 text-sm leading-6 text-blue-100">Access estimates, reports and property documents from any device.</p><Link to="/portal/documentos" className="mt-6 inline-flex text-sm font-bold text-cyan">View documents →</Link></div></aside>
     </div>
   </div>;
 }

@@ -7,25 +7,25 @@ module.exports = {
       throw new Error('El seeder demo está bloqueado en producción. Usa ALLOW_DEMO_SEED=true únicamente si aceptas crear cuentas de prueba.');
     }
     const now = new Date();
-    const adminPassword = await bcrypt.hash(process.env.SEED_ADMIN_PASSWORD || 'AdminDemo2026!', 12);
-    const clientPassword = await bcrypt.hash(process.env.SEED_CLIENT_PASSWORD || 'ClienteDemo2026!', 12);
+    const adminPassword = await bcrypt.hash(process.env.SEED_ADMIN_PASSWORD || 'SealsAdmin2026!', 12);
+    const clientPassword = await bcrypt.hash(process.env.SEED_CLIENT_PASSWORD || 'SealsClient2026!', 12);
     await queryInterface.bulkInsert('users', [
-      { id: 1, nombre: 'Administrador Nexo', email: process.env.SEED_ADMIN_EMAIL || 'admin@nexo.mx', password_hash: adminPassword, rol: 'admin', activo: true, created_at: now, updated_at: now },
-      { id: 2, nombre: 'Corporativo Horizonte', email: process.env.SEED_CLIENT_EMAIL || 'cliente@nexo.mx', password_hash: clientPassword, rol: 'cliente', activo: true, created_at: now, updated_at: now }
+      { id: 1, nombre: 'Seals Operations', email: process.env.SEED_ADMIN_EMAIL || 'admin@sealshvac.ca', password_hash: adminPassword, rol: 'admin', activo: true, created_at: now, updated_at: now },
+      { id: 2, nombre: 'Harbourview Condominiums', email: process.env.SEED_CLIENT_EMAIL || 'client@sealshvac.ca', password_hash: clientPassword, rol: 'cliente', activo: true, created_at: now, updated_at: now }
     ]);
     await queryInterface.bulkInsert('reports', [
       {
-        id: 1, user_id: 2, titulo: 'Mantenimiento preventivo de red', tipo_servicio: 'Redes y conectividad',
-        descripcion: 'Diagnóstico de nodos, limpieza de gabinete, reorganización de cableado y certificación de 24 puntos de red.',
-        notas: 'Todos los enlaces operan dentro de parámetros. Se recomienda renovar dos patch cords en la próxima visita.',
-        incidencias: 'Se detectó un puerto sin etiquetado; quedó identificado y actualizado en el plano.', estatus: 'completado',
-        fecha_servicio: '2026-07-18', tecnico: 'Carlos Mendoza', publicado: true, visto_por_cliente: false, created_at: now, updated_at: now
+        id: 1, user_id: 2, titulo: 'Fan coil cooling repair · Suite 530', tipo_servicio: 'HVAC repair',
+        descripcion: 'Diagnosed a failed control valve, confirmed airflow and restored cooling operation in the suite.',
+        notas: 'The resident received a plain-language explanation of the issue and the approved repair option.',
+        incidencias: 'Control valve showed normal wear. System performance was verified after replacement.', estatus: 'completado',
+        fecha_servicio: '2026-07-18', tecnico: 'Oscar Martinez', publicado: true, visto_por_cliente: false, created_at: now, updated_at: now
       },
       {
-        id: 2, user_id: 2, titulo: 'Instalación de cámaras en acceso norte', tipo_servicio: 'Videovigilancia',
-        descripcion: 'Instalación y configuración de cuatro cámaras IP con visión nocturna, ajuste de zonas y pruebas de grabación.',
-        notas: 'Acceso remoto verificado con el responsable de seguridad.', incidencias: 'Sin incidencias durante la instalación.',
-        estatus: 'completado', fecha_servicio: '2026-06-29', tecnico: 'Mariana Torres', publicado: true,
+        id: 2, user_id: 2, titulo: 'Seasonal fan coil maintenance · Suite 814', tipo_servicio: 'Preventive maintenance',
+        descripcion: 'Completed fan coil inspection, filter replacement, drain pan cleaning and operational testing.',
+        notas: 'Unit is operating within expected temperature and airflow ranges.', incidencias: 'No additional issues found during service.',
+        estatus: 'completado', fecha_servicio: '2026-06-29', tecnico: 'Daniel Brooks', publicado: true,
         visto_por_cliente: true, created_at: now, updated_at: now
       }
     ]);
@@ -36,8 +36,8 @@ module.exports = {
       { report_id: 2, url: 'https://images.unsplash.com/photo-1557862921-37829c790f19?auto=format&fit=crop&w=1200&q=80', tipo: 'despues', orden: 0, created_at: now }
     ]);
     await queryInterface.bulkInsert('documents', [
-      { user_id: 2, titulo: 'Póliza de mantenimiento 2026', categoria: 'poliza', url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', created_at: now, updated_at: now },
-      { user_id: 2, titulo: 'Certificación técnica del proveedor', categoria: 'certificacion', url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', created_at: now, updated_at: now }
+      { user_id: 2, titulo: '2026 preventive maintenance agreement', categoria: 'poliza', url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', created_at: now, updated_at: now },
+      { user_id: 2, titulo: 'Seals HVAC service credentials', categoria: 'certificacion', url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', created_at: now, updated_at: now }
     ]);
     await queryInterface.bulkInsert('notifications', [
       { user_id: 2, tipo: 'reporte', referencia_id: 1, leida: false, created_at: now, updated_at: now }

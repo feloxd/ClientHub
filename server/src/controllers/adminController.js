@@ -19,7 +19,7 @@ async function createInvitation(user) {
   await Invitation.create({ user_id: user.id, token_hash: hash(token), expira_en: new Date(Date.now() + 72 * 3600000) });
   const link = `${process.env.CLIENT_URL}/establecer-contrasena?token=${token}`;
   await mail.send({
-    to: user.email, subject: 'Activa tu acceso al portal Nexo', title: `Bienvenido, ${user.nombre}`,
+    to: user.email, subject: 'Activate your Seals HVAC portal access', title: `Welcome, ${user.nombre}`,
     body: 'Tu acceso al portal de clientes fue autorizado. Establece tu contraseña dentro de las próximas 72 horas.',
     buttonText: 'Establecer contraseña', buttonUrl: link
   });

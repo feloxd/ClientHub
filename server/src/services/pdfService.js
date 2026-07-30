@@ -26,7 +26,7 @@ function addFooter(doc) {
   const bottom = doc.page.height - 40;
   doc.strokeColor('#dce6ee').moveTo(52, bottom - 10).lineTo(543, bottom - 10).stroke();
   doc.fillColor('#8799aa').fontSize(7.5).font('Helvetica')
-    .text(`${process.env.COMPANY_NAME || 'Nexo Servicio Integral'} · ${process.env.COMPANY_PHONE || '55 8000 2468'} · ${process.env.COMPANY_EMAIL || 'contacto@nexo.mx'}`, 52, bottom, { width: 491, align: 'center' });
+    .text(`${process.env.COMPANY_NAME || 'Seals HVAC Services'} · ${process.env.COMPANY_PHONE || 'Toronto, Ontario'} · ${process.env.COMPANY_EMAIL || 'service@sealshvac.ca'}`, 52, bottom, { width: 491, align: 'center' });
 }
 
 function ensureSpace(doc, y, needed = 120) {
@@ -48,7 +48,7 @@ async function reportPdf(report, res) {
     size: 'A4',
     margin: 52,
     bufferPages: true,
-    info: { Title: `Reporte ${report.id} - ${report.titulo}`, Author: process.env.COMPANY_NAME || 'Nexo Servicio Integral' }
+    info: { Title: `Service report ${report.id} - ${report.titulo}`, Author: process.env.COMPANY_NAME || 'Seals HVAC Services' }
   });
   doc.pipe(res);
   addBrand(doc);
