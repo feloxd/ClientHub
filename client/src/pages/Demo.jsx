@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   AlertTriangle, ArrowLeft, ArrowRight, Bell, Building2, CalendarDays, Camera,
   Check, CheckCircle2, ChevronDown, ClipboardCheck, Clock3, CreditCard,
@@ -8,6 +8,7 @@ import {
   ShieldCheck, Sparkles, UserRoundCheck, Users, Wrench, X
 } from 'lucide-react';
 import Brand from '../components/Brand';
+import { useAuth } from '../state/AuthContext';
 
 const copy = {
   en: {
@@ -448,6 +449,10 @@ function TeamSection({ role, page, t, setToast }) {
 }
 
 export default function Demo() {
+  const { user, logout } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const authenticated = location.pathname.startsWith('/portal') && Boolean(user);
   const [role, setRole] = useState('client');
   const [activePage, setActivePage] = useState('dashboard');
   const [lang, setLang] = useState('en');
@@ -467,12 +472,18 @@ export default function Demo() {
     setToast(message);
     window.setTimeout(() => setToast(''), 2600);
   };
+  const exit = async () => {
+    await logout();
+    navigate('/login');
+  };
   return <div className="min-h-screen bg-[#f4f7f9] text-navy">
     <aside className="fixed inset-y-0 left-0 z-50 hidden w-[270px] flex-col bg-[#061729] p-5 text-white lg:flex">
       <Brand light/>
       <div className="mt-8 rounded-2xl border border-white/10 bg-white/[.06] p-4"><div className="flex items-center gap-3"><span className={`grid h-10 w-10 place-items-center rounded-xl ${meta.color}`}><RoleIcon size={19}/></span><div><p className="text-[9px] font-black uppercase tracking-[.18em] text-white/35">{t.presentation}</p><b className="text-sm">{t[role]}</b></div></div><p className="mt-3 text-[11px] leading-5 text-white/40">{t.demoHint}</p></div>
       <nav className="mt-7 space-y-1">{nav.map(([id,Icon,label]) => <button onClick={() => setActivePage(id)} key={id} className={`flex w-full items-center gap-3 rounded-xl px-3.5 py-3 text-left text-sm font-semibold transition ${activePage === id ? 'bg-white text-navy' : 'text-white/55 hover:bg-white/5 hover:text-white'}`}><Icon size={18}/>{label}{id === 'requests' && <span className="ml-auto rounded-full bg-cyan px-2 py-0.5 text-[9px] font-black text-navy">3</span>}</button>)}</nav>
-      <Link to="/" className="mt-auto flex items-center gap-2 border-t border-white/10 pt-5 text-xs font-bold text-white/45 hover:text-white"><ArrowLeft size={15}/>{t.back}</Link>
+      {authenticated
+        ? <button onClick={exit} className="mt-auto flex items-center gap-2 border-t border-white/10 pt-5 text-xs font-bold text-white/45 hover:text-white"><ArrowLeft size={15}/>{t.signout}</button>
+        : <Link to="/" className="mt-auto flex items-center gap-2 border-t border-white/10 pt-5 text-xs font-bold text-white/45 hover:text-white"><ArrowLeft size={15}/>{t.back}</Link>}
     </aside>
     {mobile && <div className="fixed inset-0 z-[80] bg-navy/60 lg:hidden" onClick={() => setMobile(false)}><aside className="h-full w-72 bg-[#061729] p-5 text-white" onClick={(e) => e.stopPropagation()}><div className="flex justify-between"><Brand light/><button onClick={() => setMobile(false)}><X/></button></div><nav className="mt-8 space-y-1">{nav.map(([id,Icon,label]) => <button onClick={() => { setActivePage(id); setMobile(false); }} key={id} className={`flex w-full items-center gap-3 rounded-xl px-3.5 py-3 text-left text-sm font-semibold ${activePage === id ? 'bg-white text-navy' : 'text-white/60'}`}><Icon size={18}/>{label}</button>)}</nav></aside></div>}
     <div className="lg:pl-[270px]">

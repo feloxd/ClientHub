@@ -4,7 +4,6 @@ import Landing from './pages/Landing';
 import Login from './pages/Login';
 import SetPassword from './pages/SetPassword';
 import PasswordRecovery from './pages/PasswordRecovery';
-import Portal from './pages/Portal';
 import Admin from './pages/Admin';
 import Demo from './pages/Demo';
 
@@ -24,7 +23,7 @@ export default function App() {
     <Route path="/establecer-contrasena" element={<SetPassword />} />
     <Route path="/recuperar-contrasena" element={<PasswordRecovery />} />
     <Route path="/restablecer-contrasena" element={<PasswordRecovery reset />} />
-    <Route path="/portal/*" element={<Guard role="cliente"><Portal /></Guard>} />
+    <Route path="/portal/*" element={<Guard role="cliente"><Demo /></Guard>} />
     <Route path="/admin/*" element={<Guard role="admin"><Admin /></Guard>} />
     <Route path="*" element={<Navigate to="/" replace />} />
   </Routes>;
