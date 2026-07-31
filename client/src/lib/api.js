@@ -1,7 +1,13 @@
 import axios from 'axios';
 
+const productionApi = 'https://api-production-6ffaa.up.railway.app/api';
+const configuredApi = import.meta.env.VITE_API_URL;
+const baseURL = import.meta.env.PROD
+  ? productionApi
+  : configuredApi || 'http://localhost:3001/api';
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3001/api',
+  baseURL,
   withCredentials: true
 });
 
