@@ -112,6 +112,9 @@ export default function Landing() {
             <a href="#contact" className="transition hover:text-white">Contact</a>
           </nav>
           <div className="hidden items-center gap-3 lg:flex">
+            <Link to="/demo" className="rounded-full border border-cyan/60 px-5 py-3 text-xs font-bold text-cyan transition hover:bg-cyan hover:text-navy">
+              Interactive demo
+            </Link>
             <Link to="/login" className="rounded-full border border-white/30 px-5 py-3 text-xs font-bold text-white transition hover:bg-white hover:text-navy">
               Client login
             </Link>
@@ -141,6 +144,7 @@ export default function Landing() {
                 <a key={id} href={`#${id}`} onClick={() => setMenu(false)}>{label}</a>
               ))}
               <Link to="/login" className="mt-2 rounded-full bg-cyan px-5 py-3 text-center text-navy">Client login</Link>
+              <Link to="/demo" className="rounded-full border border-cyan px-5 py-3 text-center text-cyan">Interactive demo</Link>
             </div>
           </nav>
         )}
@@ -178,7 +182,11 @@ export default function Landing() {
                   property managers and modern homes across the GTA.
                 </p>
                 <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-                  <a href="#contact" className="group inline-flex items-center justify-center gap-3 rounded-full bg-cyan px-7 py-4 text-sm font-extrabold text-[#061729] transition hover:bg-white">
+                  <Link to="/demo" className="group inline-flex items-center justify-center gap-3 rounded-full bg-cyan px-7 py-4 text-sm font-extrabold text-[#061729] transition hover:bg-white">
+                    Explore the platform
+                    <ArrowRight size={17} className="transition group-hover:translate-x-1" />
+                  </Link>
+                  <a href="#contact" className="group inline-flex items-center justify-center gap-3 rounded-full border border-white/30 px-7 py-4 text-sm font-bold text-white backdrop-blur transition hover:bg-white/10">
                     Request service
                     <ArrowRight size={17} className="transition group-hover:translate-x-1" />
                   </a>
@@ -305,8 +313,8 @@ export default function Landing() {
                   <span key={item} className="flex items-center gap-2"><Check size={15} className="text-cyan" />{item}</span>
                 ))}
               </div>
-              <Link to="/login" className="mt-10 inline-flex items-center gap-3 rounded-full border border-white/25 px-7 py-4 text-sm font-bold transition hover:bg-white hover:text-navy">
-                Preview client portal <ArrowRight size={16} />
+              <Link to="/demo" className="mt-10 inline-flex items-center gap-3 rounded-full border border-white/25 px-7 py-4 text-sm font-bold transition hover:bg-white hover:text-navy">
+                Preview complete platform <ArrowRight size={16} />
               </Link>
             </div>
 

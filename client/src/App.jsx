@@ -6,6 +6,7 @@ import SetPassword from './pages/SetPassword';
 import PasswordRecovery from './pages/PasswordRecovery';
 import Portal from './pages/Portal';
 import Admin from './pages/Admin';
+import Demo from './pages/Demo';
 
 function Guard({ role, children }) {
   const { user } = useAuth();
@@ -19,6 +20,7 @@ export default function App() {
     <Route path="/" element={<Landing />} />
     <Route path="/login" element={<Login portal="cliente" />} />
     <Route path="/admin/login" element={<Login portal="admin" />} />
+    <Route path="/demo" element={<Demo />} />
     <Route path="/establecer-contrasena" element={<SetPassword />} />
     <Route path="/recuperar-contrasena" element={<PasswordRecovery />} />
     <Route path="/restablecer-contrasena" element={<PasswordRecovery reset />} />
