@@ -26,8 +26,8 @@ const copy = {
     properties: 'Properties',
     team: 'Team',
     signout: 'Exit demo',
-    welcome: 'Good afternoon, Sophie',
-    welcomeText: 'Here is what is happening across Harbourview Condominium.',
+    welcome: 'Welcome, Residencias ELORA',
+    welcomeText: 'Here is what is happening across your building.',
     newRequest: 'New service request',
     activeRequests: 'Active requests',
     pendingApproval: 'Pending approval',
@@ -36,7 +36,7 @@ const copy = {
     currentJob: 'Current service request',
     noCooling: 'No cooling in living room',
     unit: 'Suite 530',
-    building: 'Harbourview Condominiums',
+    building: 'Residencias ELORA',
     quoteReady: 'Quote ready for approval',
     choose: 'Choose the best option for your property. Work will only begin after approval.',
     approve: 'Approve this option',
@@ -117,8 +117,8 @@ const copy = {
     properties: 'Immeubles',
     team: 'Équipe',
     signout: 'Quitter la démo',
-    welcome: 'Bonjour, Sophie',
-    welcomeText: 'Voici ce qui se passe au Harbourview Condominium.',
+    welcome: 'Bienvenue, Residencias ELORA',
+    welcomeText: 'Voici ce qui se passe dans votre immeuble.',
     newRequest: 'Nouvelle demande',
     activeRequests: 'Demandes actives',
     pendingApproval: 'À approuver',
@@ -127,7 +127,7 @@ const copy = {
     currentJob: 'Demande en cours',
     noCooling: 'Aucune climatisation au salon',
     unit: 'Unité 530',
-    building: 'Harbourview Condominiums',
+    building: 'Residencias ELORA',
     quoteReady: 'Soumission prête à approuver',
     choose: 'Choisissez la meilleure option. Les travaux commencent seulement après votre approbation.',
     approve: 'Approuver cette option',
@@ -259,7 +259,7 @@ function RequestModal({ t, onClose, onDone }) {
         <button type="button" onClick={onClose} className="rounded-full border border-slate-200 p-2 text-slate-500"><X size={18}/></button>
       </header>
       <div className="grid gap-5 p-6 sm:grid-cols-2 sm:p-8">
-        <label><span className="label">{t.property}</span><select className="input"><option>Harbourview Condominiums</option></select></label>
+        <label><span className="label">{t.property}</span><select className="input"><option>Residencias ELORA</option></select></label>
         <label><span className="label">{t.suite}</span><input className="input" defaultValue="Suite 1102" required/></label>
         <label className="sm:col-span-2"><span className="label">{t.issue}</span><textarea className="input min-h-28 resize-none" placeholder="The air conditioner is running but the suite is still warm..." required/></label>
         <label><span className="label">{t.priority}</span><select className="input"><option>{t.normal}</option><option>{t.urgent}</option></select></label>
@@ -400,7 +400,7 @@ function ClientSection({ page, t, setToast, setRequestOpen, selectedQuote, setSe
       <div className="flex flex-col justify-between gap-3 sm:flex-row"><div><span className="text-[10px] font-black uppercase tracking-widest text-brand-600">{row.id} · {row.suite}</span><h2 className="mt-2 font-display text-lg font-extrabold">{row.title}</h2><p className="mt-1 text-xs text-slate-500">Updated today</p></div><Pill tone={row.tone}>{row.status}</Pill></div>
       <div className="mt-5 h-1.5 overflow-hidden rounded-full bg-slate-100"><div className="h-full rounded-full bg-brand-600" style={{width:`${row.progress}%`}}/></div><p className="mt-2 text-right text-[10px] font-bold text-slate-400">{row.progress}%</p>
     </button>)}</section>
-    <aside className="self-start overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-card xl:sticky xl:top-24"><header className="bg-[#071a2e] p-6 text-white"><div className="flex justify-between"><Pill tone={selected.tone}>{selected.status}</Pill><span className="text-xs text-white/40">{selected.id}</span></div><h2 className="mt-5 font-display text-2xl font-extrabold">{selected.title}</h2><p className="mt-2 text-sm text-white/50">{selected.suite} · Harbourview Condominiums</p></header><div className="space-y-5 p-6"><div><p className="label">Description</p><p className="text-sm leading-6 text-slate-600">The system is running, but the suite remains warm. The issue is stronger in the living room.</p></div><div className="rounded-xl bg-brand-50 p-4 text-sm leading-6">{selected.status === 'Completed' ? 'Service complete. The final report and receipt are available.' : 'Operations reviewed the request. The next action is ready.'}</div><Pipeline t={t}/><div className="grid grid-cols-2 gap-2"><button onClick={() => setToast(fr ? 'Message envoyé' : 'Message sent')} className="btn-secondary"><MessageSquareText size={15}/>Message</button><button onClick={() => setToast(fr ? 'PDF téléchargé' : 'PDF downloaded')} className="btn-secondary"><FileText size={15}/>PDF</button></div></div></aside></div>
+    <aside className="self-start overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-card xl:sticky xl:top-24"><header className="bg-[#071a2e] p-6 text-white"><div className="flex justify-between"><Pill tone={selected.tone}>{selected.status}</Pill><span className="text-xs text-white/40">{selected.id}</span></div><h2 className="mt-5 font-display text-2xl font-extrabold">{selected.title}</h2><p className="mt-2 text-sm text-white/50">{selected.suite} · Residencias ELORA</p></header><div className="space-y-5 p-6"><div><p className="label">Description</p><p className="text-sm leading-6 text-slate-600">The system is running, but the suite remains warm. The issue is stronger in the living room.</p></div><div className="rounded-xl bg-brand-50 p-4 text-sm leading-6">{selected.status === 'Completed' ? 'Service complete. The final report and receipt are available.' : 'Operations reviewed the request. The next action is ready.'}</div><Pipeline t={t}/><div className="grid grid-cols-2 gap-2"><button onClick={() => setToast(fr ? 'Message envoyé' : 'Message sent')} className="btn-secondary"><MessageSquareText size={15}/>Message</button><button onClick={() => setToast(fr ? 'PDF téléchargé' : 'PDF downloaded')} className="btn-secondary"><FileText size={15}/>PDF</button></div></div></aside></div>
   </div>;
 
   if (page === 'quotes') {
@@ -429,7 +429,7 @@ function ClientSection({ page, t, setToast, setRequestOpen, selectedQuote, setSe
     return <div className="space-y-7"><DemoHeading eyebrow={fr?'Traçabilité complète':'Complete record'} title={fr?'Historique':'History'} text={fr?'Toutes les actions en ordre chronologique.':'Every action, approval and visit in chronological order.'} action={<select value={filter} onChange={e=>setFilter(e.target.value)} className="input w-52"><option value="all">All activity</option><option value="updates">Updates</option><option value="service">Services</option></select>}/><section className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-card"><div className="relative before:absolute before:bottom-5 before:left-[19px] before:top-5 before:w-px before:bg-slate-200">{rows.map(([date,title,text],i)=><div key={date+title} className="relative flex gap-5 pb-7 last:pb-0"><span className={`relative z-10 mt-1 grid h-10 w-10 shrink-0 place-items-center rounded-full ${i===0?'bg-brand-600 text-white':'bg-slate-100 text-slate-500'}`}>{i===0?<Sparkles size={16}/>:<Check size={15}/>}</span><div><p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">{date}</p><h2 className="mt-1 font-display font-extrabold">{title}</h2><p className="mt-1 text-xs text-slate-500">{text}</p></div></div>)}</div></section></div>;
   }
 
-  const docs=[['HVAC service report · Suite 407','Service report','Jul 29, 2026',ClipboardCheck],['Payment receipt · #PM-8821','Receipt','Jul 29, 2026',ReceiptText],['SEALS liability insurance','Insurance','Valid to Mar 2027',ShieldCheck],['WSIB clearance certificate','Certification','Valid to Jan 2027',FileCheck2],['Harbourview maintenance plan','Agreement','2026 program',CalendarDays],['Fan coil care guide','Resource','Homeowner guide',Wrench]];
+  const docs=[['HVAC service report · Suite 407','Service report','Jul 29, 2026',ClipboardCheck],['Payment receipt · #PM-8821','Receipt','Jul 29, 2026',ReceiptText],['SEALS liability insurance','Insurance','Valid to Mar 2027',ShieldCheck],['WSIB clearance certificate','Certification','Valid to Jan 2027',FileCheck2],['Residencias ELORA maintenance plan','Agreement','2026 program',CalendarDays],['Fan coil care guide','Resource','Homeowner guide',Wrench]];
   return <div className="space-y-7"><DemoHeading eyebrow={fr?'Dossier de propriété':'Property file'} title={fr?'Documents':'Documents'} text={fr?'Rapports, reçus, assurances et certifications.':'Reports, receipts, insurance and certifications.'}/><div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">{docs.map(([title,cat,date,Icon])=><article key={title} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-card transition hover:-translate-y-1"><div className="flex justify-between"><span className="grid h-12 w-12 place-items-center rounded-xl bg-brand-50 text-brand-600"><Icon size={21}/></span><Pill>{cat}</Pill></div><h2 className="mt-7 font-display text-lg font-extrabold">{title}</h2><p className="mt-2 text-xs text-slate-500">{date} · PDF</p><div className="mt-6 grid grid-cols-2 gap-2"><button onClick={()=>setToast(fr?'Document ouvert':'Document opened')} className="btn-secondary py-2">View</button><button onClick={()=>setToast(fr?'Téléchargé':'Downloaded')} className="btn-primary py-2"><FileText size={14}/>Download</button></div></article>)}</div></div>;
 }
 
@@ -443,7 +443,7 @@ function TeamSection({ role, page, t, setToast }) {
   }
   if (page === 'schedule') return <div className="space-y-7"><DemoHeading eyebrow="Operations" title={fr?'Répartition et calendrier':'Dispatch & schedule'} text="Assign technicians and organize routes."/><div className="grid gap-4 lg:grid-cols-3">{['Oscar M.','Daniel R.','Miguel A.'].map((tech,i)=><section key={tech} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-card"><div className="flex items-center gap-3"><span className="grid h-10 w-10 place-items-center rounded-full bg-violet-100 font-bold text-violet-700">{tech.split(' ').map(x=>x[0]).join('')}</span><div><b>{tech}</b><p className="text-xs text-emerald-600">Available · {3+i} jobs</p></div></div><div className="mt-5 space-y-2">{requestRows.slice(0,2).map(job=><button onClick={()=>setToast(`${job.id} opened`)} key={job.id} className="w-full rounded-xl bg-slate-50 p-3 text-left text-xs"><b>{job.suite}</b><small className="block text-slate-500">{job.title}</small></button>)}</div></section>)}</div></div>;
   if (page === 'team') return <div className="space-y-7"><DemoHeading eyebrow="Operations" title={fr?'Équipe technique':'Technical team'} text="Availability, workload and performance." action={<button onClick={()=>setToast('Invitation sent')} className="btn-primary"><Plus size={16}/>Add technician</button>}/><div className="grid gap-4 md:grid-cols-3">{['Oscar M.','Daniel R.','Miguel A.'].map((name,i)=><article key={name} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-card"><span className="grid h-14 w-14 place-items-center rounded-full bg-violet-100 font-bold text-violet-700">{name.split(' ').map(x=>x[0]).join('')}</span><h2 className="mt-5 font-display text-lg font-extrabold">{name}</h2><p className="text-xs text-slate-500">HVAC Technician · {94+i*2}% on time</p><button onClick={()=>setToast(`${name} opened`)} className="mt-5 text-xs font-bold text-brand-600">View profile →</button></article>)}</div></div>;
-  if (page === 'properties') return <div className="space-y-7"><DemoHeading eyebrow="CRM" title={fr?'Immeubles et unités':'Properties & units'} text="Client accounts, buildings and covered suites."/><div className="grid gap-4 md:grid-cols-2">{[['Harbourview Condominiums','420 suites · 16 active jobs'],['Lakeshore Residences','310 suites · 8 active jobs'],['King West Towers','188 suites · 4 active jobs']].map(row=><button onClick={()=>setToast(`${row[0]} opened`)} key={row[0]} className="rounded-2xl border border-slate-200 bg-white p-6 text-left shadow-card"><Building2 className="text-brand-600"/><h2 className="mt-5 font-display text-xl font-extrabold">{row[0]}</h2><p className="mt-2 text-sm text-slate-500">{row[1]}</p></button>)}</div></div>;
+  if (page === 'properties') return <div className="space-y-7"><DemoHeading eyebrow="CRM" title={fr?'Immeubles et unités':'Properties & units'} text="Client accounts, buildings and covered suites."/><div className="grid gap-4 md:grid-cols-2">{[['Residencias ELORA','420 suites · 16 active jobs'],['Lakeshore Residences','310 suites · 8 active jobs'],['King West Towers','188 suites · 4 active jobs']].map(row=><button onClick={()=>setToast(`${row[0]} opened`)} key={row[0]} className="rounded-2xl border border-slate-200 bg-white p-6 text-left shadow-card"><Building2 className="text-brand-600"/><h2 className="mt-5 font-display text-xl font-extrabold">{row[0]}</h2><p className="mt-2 text-sm text-slate-500">{row[1]}</p></button>)}</div></div>;
   const title=page==='quotes'?'Quotes':page==='payments'?'On-site payments':page==='settings'?'Settings':'Service requests';
   return <div className="space-y-7"><DemoHeading eyebrow="Operations" title={title} text="Search, review and manage every record." action={<button onClick={()=>setToast('New record opened')} className="btn-primary"><Plus size={16}/>New</button>}/><section className="overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-card"><div className="relative border-b p-4"><Search className="absolute left-7 top-1/2 -translate-y-1/2 text-slate-400" size={16}/><input className="input pl-10" placeholder="Search..."/></div>{requestRows.map(row=><button onClick={()=>setToast(`${row.id} opened`)} key={row.id} className="grid w-full gap-2 border-b border-slate-100 p-5 text-left text-sm hover:bg-slate-50 sm:grid-cols-4"><b className="text-brand-600">{row.id}</b><span>{row.suite}</span><b>{row.title}</b><span>{row.status}</span></button>)}</section></div>;
 }

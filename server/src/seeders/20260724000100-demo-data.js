@@ -11,7 +11,7 @@ module.exports = {
     const clientPassword = await bcrypt.hash(process.env.SEED_CLIENT_PASSWORD || 'SealsClient2026!', 12);
     await queryInterface.bulkInsert('users', [
       { id: 1, nombre: 'Seals Operations', email: process.env.SEED_ADMIN_EMAIL || 'admin@sealshvac.ca', password_hash: adminPassword, rol: 'admin', activo: true, created_at: now, updated_at: now },
-      { id: 2, nombre: 'Harbourview Condominiums', email: process.env.SEED_CLIENT_EMAIL || 'client@sealshvac.ca', password_hash: clientPassword, rol: 'cliente', activo: true, created_at: now, updated_at: now }
+      { id: 2, nombre: 'Residencias ELORA', email: process.env.SEED_CLIENT_EMAIL || 'client@sealshvac.ca', password_hash: clientPassword, rol: 'cliente', activo: true, created_at: now, updated_at: now }
     ]);
     await queryInterface.bulkInsert('reports', [
       {
