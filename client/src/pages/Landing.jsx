@@ -2,21 +2,21 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight,
-  ArrowUpRight,
   BadgeCheck,
   Building2,
+  CalendarCheck2,
   Check,
   CheckCircle2,
   ChevronRight,
+  ClipboardCheck,
   Clock3,
-  FileCheck2,
+  FileText,
   Gauge,
-  MapPin,
+  Image as ImageIcon,
   Menu,
   MessageSquareText,
-  Phone,
   ShieldCheck,
-  Star,
+  Snowflake,
   ThermometerSun,
   UserRoundCheck,
   Wind,
@@ -26,442 +26,387 @@ import {
 import Brand from '../components/Brand';
 import api from '../lib/api';
 
-const services = [
-  {
-    icon: Wrench,
-    number: '01',
-    title: 'Repairs & diagnostics',
-    text: 'Straight answers, clear options and responsive repairs for in-suite HVAC systems.'
+const copy = {
+  en: {
+    nav: ['Services', 'Why Seals', 'How it works', 'Property managers', 'Contact'],
+    login: 'Client login',
+    request: 'Request service',
+    heroTag: 'Condominium HVAC specialists · Toronto & GTA',
+    heroTitle: 'Reliable HVAC service for every suite.',
+    heroText: 'Repair, maintenance and installation for condominiums and residential buildings. Clear answers, professional technicians and documented results.',
+    heroPrimary: 'Request HVAC service',
+    heroSecondary: 'See our services',
+    trust: ['Condominium specialists', 'Clear estimates', 'Documented service'],
+    introTag: 'Comfort without complications',
+    introTitle: 'When the HVAC stops working, you need a clear solution.',
+    introText: 'Seals helps property managers and residents diagnose the problem, understand the options and get the work completed—without confusing technical language.',
+    introPoints: ['Simple explanations', 'Options before work begins', 'Photos and final reports'],
+    servicesTag: 'HVAC services',
+    servicesTitle: 'Everything your building needs to stay comfortable.',
+    servicesText: 'Specialized service for in-suite systems, fan coils and residential heating and cooling equipment.',
+    serviceItems: [
+      ['Repair & diagnostics', 'Fast troubleshooting and practical repair options for heating, cooling and ventilation problems.'],
+      ['Fan coil service', 'Cleaning, repair and performance care for condominium fan coil units.'],
+      ['Preventive maintenance', 'Planned service that helps reduce unexpected breakdowns and extend equipment life.'],
+      ['Installation & replacement', 'Professional equipment selection, installation and commissioning for lasting comfort.']
+    ],
+    quote: 'Need help with an HVAC problem?',
+    quoteText: 'Tell us what is happening in everyday words. We will guide you through the next step.',
+    whyTag: 'Why choose Seals',
+    whyTitle: 'Professional service you can understand and verify.',
+    whyText: 'Every service call is handled with the building, the resident and the equipment in mind. You always know what was found, what was approved and what was completed.',
+    whyItems: [
+      ['Clear communication', 'We explain the issue in plain language and keep every party informed.'],
+      ['Approved work only', 'You see the available options and costs before the technician proceeds.'],
+      ['Complete evidence', 'Photos, notes and a final service report document the work.'],
+      ['Respectful technicians', 'Organized appointments and professional care inside every suite.']
+    ],
+    processTag: 'Simple service process',
+    processTitle: 'From the first request to the final report.',
+    processItems: [
+      ['01', 'Request', 'The building reports the suite, problem and priority. Photos are optional.'],
+      ['02', 'Review & quote', 'Seals reviews the request and presents the appropriate repair options.'],
+      ['03', 'Schedule & service', 'The administrator assigns the appointment and a technician completes the work.'],
+      ['04', 'Close & document', 'Evidence, payment status and the final report stay available in the client portal.']
+    ],
+    portalTag: 'Built for property managers',
+    portalTitle: 'One clear view of every suite and service request.',
+    portalText: 'Your building account can report problems for multiple apartments, approve quotes, follow appointments and keep a complete HVAC service history.',
+    portalList: ['Requests by building and suite', 'Quote approvals', 'Appointments and technician progress', 'Payments, documents and service history'],
+    portalDemo: 'Explore the interactive portal',
+    portalLogin: 'Access client account',
+    finalTag: 'Responsive condominium service',
+    finalTitle: 'Your building’s comfort deserves a better process.',
+    finalText: 'Start a service request and let Seals coordinate the diagnosis, approval, appointment and final documentation.',
+    contactTag: 'Request service',
+    contactTitle: 'Tell us what’s happening.',
+    contactText: 'No technical explanation needed. Share the building, suite and problem. Our team will take it from there.',
+    fields: ['Name', 'Email', 'Phone', 'Service', 'Building / suite', 'Describe the problem'],
+    serviceOptions: ['Select a service', 'HVAC repair', 'Fan coil service', 'Preventive maintenance', 'Installation or replacement'],
+    send: 'Send service request',
+    sending: 'Sending…',
+    success: 'Thank you. Our team will contact you shortly.',
+    error: 'We could not send the request. Please try again.',
+    footer: 'Condominium HVAC repair, maintenance and installation across Toronto and the GTA.',
+    copyright: '© 2026 Seals HVAC Services. All rights reserved.',
+    sticky: 'Request service'
   },
-  {
-    icon: Wind,
-    number: '02',
-    title: 'Fan coil service',
-    text: 'Cleaning, restoration and performance care for fan coil units in modern condominiums.'
-  },
-  {
-    icon: Gauge,
-    number: '03',
-    title: 'Preventive maintenance',
-    text: 'Planned service programs that reduce breakdowns and protect building operations.'
-  },
-  {
-    icon: ThermometerSun,
-    number: '04',
-    title: 'Installation & replacement',
-    text: 'Thoughtful equipment selection and professional installation with complete documentation.'
+  fr: {
+    nav: ['Services', 'Pourquoi Seals', 'Fonctionnement', 'Gestionnaires', 'Contact'],
+    login: 'Portail client',
+    request: 'Demander un service',
+    heroTag: 'Spécialistes CVCA en copropriété · Toronto et RGT',
+    heroTitle: 'Un service CVCA fiable pour chaque unité.',
+    heroText: 'Réparation, entretien et installation pour copropriétés et immeubles résidentiels. Des réponses claires, des techniciens professionnels et des résultats documentés.',
+    heroPrimary: 'Demander un service CVCA',
+    heroSecondary: 'Voir nos services',
+    trust: ['Spécialistes en copropriété', 'Estimations claires', 'Service documenté'],
+    introTag: 'Le confort sans complications',
+    introTitle: 'Quand le système CVCA tombe en panne, il faut une solution claire.',
+    introText: 'Seals aide les gestionnaires et les résidents à comprendre le problème, comparer les options et terminer les travaux, sans jargon technique.',
+    introPoints: ['Explications simples', 'Options avant les travaux', 'Photos et rapport final'],
+    servicesTag: 'Services CVCA',
+    servicesTitle: 'Tout ce qu’il faut pour assurer le confort de votre immeuble.',
+    servicesText: 'Service spécialisé pour systèmes d’unité, ventilo-convecteurs et équipements résidentiels de chauffage et climatisation.',
+    serviceItems: [
+      ['Réparation et diagnostic', 'Diagnostic rapide et solutions pratiques pour les problèmes de chauffage, climatisation et ventilation.'],
+      ['Ventilo-convecteurs', 'Nettoyage, réparation et entretien de performance des unités en copropriété.'],
+      ['Entretien préventif', 'Un service planifié pour réduire les pannes imprévues et prolonger la vie des équipements.'],
+      ['Installation et remplacement', 'Sélection, installation et mise en service professionnelles pour un confort durable.']
+    ],
+    quote: 'Un problème de chauffage ou climatisation?',
+    quoteText: 'Décrivez-nous la situation avec vos propres mots. Nous vous guiderons vers la prochaine étape.',
+    whyTag: 'Pourquoi choisir Seals',
+    whyTitle: 'Un service professionnel que vous pouvez comprendre et vérifier.',
+    whyText: 'Chaque intervention tient compte de l’immeuble, du résident et de l’équipement. Vous savez toujours ce qui a été trouvé, autorisé et réalisé.',
+    whyItems: [
+      ['Communication claire', 'Nous expliquons le problème simplement et informons toutes les parties.'],
+      ['Travaux autorisés', 'Vous voyez les options et les coûts avant le début des travaux.'],
+      ['Preuves complètes', 'Photos, notes et rapport final documentent chaque intervention.'],
+      ['Techniciens respectueux', 'Rendez-vous organisés et travail professionnel dans chaque unité.']
+    ],
+    processTag: 'Un processus simple',
+    processTitle: 'De la demande initiale au rapport final.',
+    processItems: [
+      ['01', 'Demande', 'L’immeuble indique l’unité, le problème et la priorité. Les photos sont facultatives.'],
+      ['02', 'Analyse et devis', 'Seals analyse la demande et présente les options de réparation appropriées.'],
+      ['03', 'Rendez-vous et service', 'L’administrateur planifie la visite et un technicien effectue les travaux.'],
+      ['04', 'Clôture et rapport', 'Les preuves, le paiement et le rapport restent accessibles dans le portail.']
+    ],
+    portalTag: 'Conçu pour les gestionnaires',
+    portalTitle: 'Une vue claire de chaque unité et demande de service.',
+    portalText: 'Le compte de votre immeuble permet de signaler des problèmes dans plusieurs appartements, d’approuver les devis et de conserver un historique CVCA complet.',
+    portalList: ['Demandes par immeuble et unité', 'Approbation des devis', 'Rendez-vous et suivi du technicien', 'Paiements, documents et historique'],
+    portalDemo: 'Explorer le portail interactif',
+    portalLogin: 'Accéder au compte client',
+    finalTag: 'Service réactif en copropriété',
+    finalTitle: 'Le confort de votre immeuble mérite un meilleur processus.',
+    finalText: 'Créez une demande et laissez Seals coordonner le diagnostic, l’autorisation, le rendez-vous et le rapport final.',
+    contactTag: 'Demander un service',
+    contactTitle: 'Décrivez-nous la situation.',
+    contactText: 'Aucun jargon nécessaire. Indiquez l’immeuble, l’unité et le problème. Notre équipe s’occupe du reste.',
+    fields: ['Nom', 'Courriel', 'Téléphone', 'Service', 'Immeuble / unité', 'Décrivez le problème'],
+    serviceOptions: ['Choisir un service', 'Réparation CVCA', 'Service de ventilo-convecteur', 'Entretien préventif', 'Installation ou remplacement'],
+    send: 'Envoyer la demande',
+    sending: 'Envoi…',
+    success: 'Merci. Notre équipe communiquera avec vous sous peu.',
+    error: 'La demande n’a pas pu être envoyée. Veuillez réessayer.',
+    footer: 'Réparation, entretien et installation CVCA pour copropriétés à Toronto et dans la RGT.',
+    copyright: '© 2026 Seals HVAC Services. Tous droits réservés.',
+    sticky: 'Demander un service'
   }
-];
+};
 
-const reviews = [
-  {
-    quote: 'Seals gives our management team something rare: fast communication, clean work and a clear record of every visit.',
-    name: 'Property Manager',
-    company: 'Toronto Condominium'
-  },
-  {
-    quote: 'The technician explained the issue in plain language and gave us options before any work began.',
-    name: 'Suite Owner',
-    company: 'North York'
-  },
-  {
-    quote: 'From the service request to the final report, the entire experience felt organized and professional.',
-    name: 'Building Administrator',
-    company: 'Greater Toronto Area'
-  }
-];
-
-const workflow = [
-  { icon: MessageSquareText, label: 'Service request', detail: 'Unit 530 · No cooling', state: 'Received' },
-  { icon: FileCheck2, label: 'Estimate', detail: 'Repair option approved', state: 'Approved' },
-  { icon: UserRoundCheck, label: 'Technician', detail: 'Assigned and en route', state: 'Scheduled' },
-  { icon: CheckCircle2, label: 'Service report', detail: 'Photos and notes included', state: 'Complete' }
-];
+const serviceIcons = [Wrench, Wind, Gauge, ThermometerSun];
+const whyIcons = [MessageSquareText, ShieldCheck, ImageIcon, UserRoundCheck];
+const processIcons = [FileText, ClipboardCheck, CalendarCheck2, CheckCircle2];
 
 export default function Landing() {
   const [menu, setMenu] = useState(false);
+  const [lang, setLang] = useState('en');
   const [sent, setSent] = useState('');
   const [sending, setSending] = useState(false);
+  const t = copy[lang];
 
   const submit = async (event) => {
     event.preventDefault();
     setSending(true);
     setSent('');
-    const data = Object.fromEntries(new FormData(event.currentTarget));
+    const form = event.currentTarget;
     try {
-      const response = await api.post('/publico/contacto', data);
-      setSent(response.data.message || 'Thank you. Our team will contact you shortly.');
-      event.currentTarget.reset();
-    } catch (error) {
-      setSent(error.response?.data?.error || 'Please call us and we will be happy to help.');
+      const response = await api.post('/publico/contacto', Object.fromEntries(new FormData(form)));
+      setSent(response.data.message || t.success);
+      form.reset();
+    } catch {
+      setSent(t.error);
     } finally {
       setSending(false);
     }
   };
 
   return (
-    <div className="overflow-hidden bg-[#f3f5f7] text-[#10263a]">
-      <header className="absolute inset-x-0 top-0 z-50 border-b border-white/15">
-        <div className="container-wide flex h-[92px] items-center justify-between">
-          <Brand light />
-          <nav className="hidden items-center gap-8 text-[11px] font-bold uppercase tracking-[.18em] text-white/80 lg:flex">
-            <a href="#about" className="transition hover:text-white">About</a>
-            <a href="#services" className="transition hover:text-white">Services</a>
-            <a href="#experience" className="transition hover:text-white">Client experience</a>
-            <a href="#reviews" className="transition hover:text-white">Reviews</a>
-            <a href="#contact" className="transition hover:text-white">Contact</a>
+    <div className="overflow-hidden bg-white text-[#092842]">
+      <header className="absolute inset-x-0 top-0 z-50 border-b border-white/20">
+        <div className="container-wide flex h-20 items-center justify-between md:h-24">
+          <Brand light compact />
+          <nav className="hidden items-center gap-6 text-[11px] font-extrabold uppercase tracking-[.12em] text-white/80 xl:flex">
+            {t.nav.map((label, index) => (
+              <a key={label} href={['#services', '#why', '#process', '#property', '#contact'][index]} className="transition hover:text-cyan">{label}</a>
+            ))}
           </nav>
-          <div className="hidden items-center gap-3 lg:flex">
-            <Link to="/demo" className="rounded-full border border-cyan/60 px-5 py-3 text-xs font-bold text-cyan transition hover:bg-cyan hover:text-navy">
-              Interactive demo
-            </Link>
-            <Link to="/login" className="rounded-full border border-white/30 px-5 py-3 text-xs font-bold text-white transition hover:bg-white hover:text-navy">
-              Client login
-            </Link>
-            <a href="#contact" className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-xs font-bold text-navy transition hover:bg-cyan">
-              Request service <ArrowUpRight size={15} />
-            </a>
+          <div className="hidden items-center gap-3 md:flex">
+            <button type="button" onClick={() => setLang(lang === 'en' ? 'fr' : 'en')} className="rounded-full border border-white/30 px-4 py-3 text-xs font-extrabold text-white">
+              {lang === 'en' ? 'FR' : 'EN'}
+            </button>
+            <Link to="/login" className="rounded-full border border-white/30 px-5 py-3 text-xs font-extrabold text-white transition hover:bg-white hover:text-navy">{t.login}</Link>
+            <a href="#contact" className="rounded-full bg-cyan px-5 py-3 text-xs font-extrabold text-navy transition hover:bg-white">{t.request}</a>
           </div>
-          <button
-            type="button"
-            onClick={() => setMenu(!menu)}
-            className="rounded-full border border-white/25 p-2.5 text-white lg:hidden"
-            aria-label="Open menu"
-          >
+          <button type="button" onClick={() => setMenu(!menu)} className="rounded-full border border-white/30 p-2.5 text-white md:hidden" aria-label="Menu">
             {menu ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
         {menu && (
-          <nav className="border-t border-white/15 bg-[#061729]/95 px-6 py-6 text-sm font-bold text-white backdrop-blur lg:hidden">
-            <div className="mx-auto flex max-w-7xl flex-col gap-5">
-              {[
-                ['about', 'About'],
-                ['services', 'Services'],
-                ['experience', 'Client experience'],
-                ['reviews', 'Reviews'],
-                ['contact', 'Contact']
-              ].map(([id, label]) => (
-                <a key={id} href={`#${id}`} onClick={() => setMenu(false)}>{label}</a>
+          <div className="border-t border-white/15 bg-[#041b2e]/98 px-5 py-5 text-white backdrop-blur md:hidden">
+            <nav className="flex flex-col gap-1">
+              {t.nav.map((label, index) => (
+                <a key={label} href={['#services', '#why', '#process', '#property', '#contact'][index]} onClick={() => setMenu(false)} className="border-b border-white/10 py-3 text-sm font-bold">{label}</a>
               ))}
-              <Link to="/login" className="mt-2 rounded-full bg-cyan px-5 py-3 text-center text-navy">Client login</Link>
-              <Link to="/demo" className="rounded-full border border-cyan px-5 py-3 text-center text-cyan">Interactive demo</Link>
-            </div>
-          </nav>
+              <div className="mt-4 grid grid-cols-2 gap-2">
+                <button type="button" onClick={() => setLang(lang === 'en' ? 'fr' : 'en')} className="rounded-lg border border-white/25 py-3 text-xs font-bold">{lang === 'en' ? 'Français' : 'English'}</button>
+                <Link to="/login" className="rounded-lg bg-white py-3 text-center text-xs font-bold text-navy">{t.login}</Link>
+              </div>
+            </nav>
+          </div>
         )}
       </header>
 
       <main>
-        <section className="relative min-h-[760px] bg-[#061729] text-white lg:min-h-screen">
-          <video
-            className="absolute inset-0 h-full w-full object-cover"
-            src="https://www.sealshvac.ca/video/V1.mp4"
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="metadata"
-          />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,15,28,.94)_0%,rgba(3,15,28,.72)_42%,rgba(3,15,28,.18)_75%,rgba(3,15,28,.45)_100%)]" />
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,.25),transparent_28%,rgba(2,13,25,.65))]" />
-          <div className="hero-noise absolute inset-0 opacity-30" />
-
-          <div className="container-wide relative flex min-h-[760px] items-end pb-16 pt-40 lg:min-h-screen lg:pb-20">
-            <div className="grid w-full items-end gap-12 lg:grid-cols-[1fr_320px]">
-              <div className="max-w-4xl">
-                <p className="mb-7 flex items-center gap-3 text-[11px] font-bold uppercase tracking-[.28em] text-cyan">
-                  <span className="h-px w-10 bg-cyan" />
-                  Condominium HVAC specialists · Toronto
-                </p>
-                <h1 className="font-display text-[clamp(3.7rem,8vw,8.5rem)] font-extrabold leading-[.83] tracking-[-.065em]">
-                  Comfort,
-                  <br />
-                  <span className="font-serif font-normal italic tracking-[-.04em] text-cyan">handled.</span>
-                </h1>
-                <p className="mt-8 max-w-2xl text-base leading-7 text-white/70 sm:text-lg sm:leading-8">
-                  Responsive HVAC repair, maintenance and installation for condominiums,
-                  property managers and modern homes across the GTA.
-                </p>
-                <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-                  <Link to="/demo" className="group inline-flex items-center justify-center gap-3 rounded-full bg-cyan px-7 py-4 text-sm font-extrabold text-[#061729] transition hover:bg-white">
-                    Explore the platform
-                    <ArrowRight size={17} className="transition group-hover:translate-x-1" />
-                  </Link>
-                  <a href="#contact" className="group inline-flex items-center justify-center gap-3 rounded-full border border-white/30 px-7 py-4 text-sm font-bold text-white backdrop-blur transition hover:bg-white/10">
-                    Request service
-                    <ArrowRight size={17} className="transition group-hover:translate-x-1" />
-                  </a>
-                  <a href="#services" className="inline-flex items-center justify-center gap-3 rounded-full border border-white/30 px-7 py-4 text-sm font-bold text-white backdrop-blur transition hover:bg-white/10">
-                    Explore services <ChevronRight size={17} />
-                  </a>
-                </div>
+        <section className="relative min-h-[720px] bg-[#041b2e] text-white md:min-h-[820px]">
+          <video className="absolute inset-0 h-full w-full object-cover" src="https://www.sealshvac.ca/video/V1.mp4" autoPlay muted loop playsInline preload="metadata" />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(2,20,35,.96)_0%,rgba(2,20,35,.76)_48%,rgba(2,20,35,.25)_100%)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,.25),transparent_45%,rgba(2,20,35,.72))]" />
+          <div className="container-wide relative flex min-h-[720px] items-end pb-24 pt-36 md:min-h-[820px] md:items-center md:pb-20 md:pt-32">
+            <div className="max-w-[800px]">
+              <p className="mb-5 flex items-center gap-3 text-[10px] font-extrabold uppercase tracking-[.22em] text-cyan md:text-xs">
+                <Snowflake size={17} /> {t.heroTag}
+              </p>
+              <h1 className="font-display text-[clamp(2.8rem,7vw,6.6rem)] font-extrabold leading-[.94] tracking-[-.06em]">{t.heroTitle}</h1>
+              <p className="mt-6 max-w-2xl text-[15px] leading-7 text-white/75 md:text-xl md:leading-9">{t.heroText}</p>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <a href="#contact" className="inline-flex min-h-14 items-center justify-center gap-3 rounded-full bg-cyan px-7 text-sm font-extrabold text-navy shadow-[0_15px_40px_rgba(69,194,223,.25)] transition hover:-translate-y-0.5 hover:bg-white">
+                  {t.heroPrimary} <ArrowRight size={18} />
+                </a>
+                <a href="#services" className="inline-flex min-h-14 items-center justify-center gap-3 rounded-full border border-white/35 bg-white/5 px-7 text-sm font-extrabold text-white backdrop-blur transition hover:bg-white/15">
+                  {t.heroSecondary} <ChevronRight size={18} />
+                </a>
               </div>
-
-              <aside className="hidden border-l border-white/20 pl-8 lg:block">
-                <p className="text-[10px] font-bold uppercase tracking-[.24em] text-white/45">The Seals standard</p>
-                <div className="mt-6 space-y-6">
-                  {[
-                    ['01', 'Clear communication'],
-                    ['02', 'Documented service'],
-                    ['03', 'Professional care']
-                  ].map(([number, label]) => (
-                    <div key={number} className="flex items-center gap-4">
-                      <span className="font-serif text-2xl italic text-cyan">{number}</span>
-                      <span className="text-sm font-semibold text-white/85">{label}</span>
-                    </div>
-                  ))}
-                </div>
-              </aside>
+              <div className="mt-10 grid max-w-2xl gap-3 border-t border-white/20 pt-6 sm:grid-cols-3">
+                {t.trust.map((item) => <span key={item} className="flex items-center gap-2 text-xs font-bold text-white/75"><Check size={15} className="text-cyan" />{item}</span>)}
+              </div>
             </div>
           </div>
-
-          <div className="absolute bottom-0 right-0 hidden items-center gap-8 border-l border-t border-white/15 bg-[#061729]/80 px-9 py-5 text-xs text-white/65 backdrop-blur md:flex">
-            <span className="flex items-center gap-2"><Clock3 size={15} className="text-cyan" /> Responsive scheduling</span>
-            <span className="flex items-center gap-2"><ShieldCheck size={15} className="text-cyan" /> Trusted in-suite service</span>
+          <div className="absolute bottom-0 right-0 hidden bg-cyan px-8 py-5 text-xs font-extrabold uppercase tracking-[.14em] text-navy lg:block">
+            Toronto · North York · GTA
           </div>
         </section>
 
-        <section id="about" className="bg-[#f3f5f7] py-24 sm:py-32">
-          <div className="container-wide grid gap-14 lg:grid-cols-[.78fr_1.22fr] lg:items-start">
+        <section className="bg-[#f3f7fa] py-20 md:py-28">
+          <div className="container-site grid gap-12 lg:grid-cols-[1.05fr_.95fr] lg:items-center">
             <div>
-              <p className="kicker">Built around your property</p>
-              <div className="mt-20 hidden max-w-xs border-l border-[#b8c5ce] pl-6 lg:block">
-                <p className="font-serif text-5xl italic text-brand-600">“</p>
-                <p className="-mt-3 text-sm leading-6 text-slate-600">
-                  We explain the issue in everyday language, so you can make the right decision with confidence.
-                </p>
-              </div>
+              <p className="kicker">{t.introTag}</p>
+              <h2 className="mt-5 font-display text-4xl font-extrabold leading-[1.02] tracking-[-.045em] text-navy md:text-6xl">{t.introTitle}</h2>
             </div>
             <div>
-              <h2 className="premium-title max-w-5xl">
-                HVAC service should feel
-                <span className="font-serif font-normal italic text-brand-600"> simple, clear and accountable.</span>
-              </h2>
-              <div className="mt-10 grid gap-8 border-t border-slate-300 pt-8 sm:grid-cols-2">
-                <p className="text-base leading-7 text-slate-600">
-                  We specialize in the systems that keep condominium suites comfortable.
-                  From an urgent repair to a planned building program, every visit is handled
-                  with respect for residents and property operations.
-                </p>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <strong className="font-display text-4xl font-extrabold text-navy">GTA</strong>
-                    <span className="mt-2 block text-xs font-bold uppercase tracking-widest text-slate-500">Local coverage</span>
-                  </div>
-                  <div>
-                    <strong className="font-display text-4xl font-extrabold text-navy">100%</strong>
-                    <span className="mt-2 block text-xs font-bold uppercase tracking-widest text-slate-500">Documented work</span>
-                  </div>
-                </div>
+              <p className="text-base leading-8 text-slate-600 md:text-lg">{t.introText}</p>
+              <div className="mt-7 space-y-4">
+                {t.introPoints.map((item) => <div key={item} className="flex items-center gap-3 border-b border-slate-200 pb-4 text-sm font-extrabold"><BadgeCheck className="text-brand-600" size={20} />{item}</div>)}
               </div>
             </div>
           </div>
         </section>
 
-        <section id="services" className="bg-white py-24 sm:py-32">
+        <section id="services" className="py-20 md:py-28">
           <div className="container-wide">
-            <div className="flex flex-col justify-between gap-8 lg:flex-row lg:items-end">
-              <div>
-                <p className="kicker">What we do</p>
-                <h2 className="premium-title mt-5">Service for every season.</h2>
-              </div>
-              <p className="max-w-md text-sm leading-7 text-slate-600">
-                Specialized care for in-suite heating and cooling systems, designed around
-                the expectations of residents and property teams.
-              </p>
+            <div className="max-w-3xl">
+              <p className="kicker">{t.servicesTag}</p>
+              <h2 className="premium-title mt-5">{t.servicesTitle}</h2>
+              <p className="mt-6 max-w-2xl text-base leading-8 text-slate-600">{t.servicesText}</p>
             </div>
-
-            <div className="mt-16 grid border-y border-slate-200 lg:grid-cols-4">
-              {services.map(({ icon: Icon, number, title, text }, index) => (
-                <article
-                  key={title}
-                  className={`group relative min-h-[390px] px-6 py-8 transition duration-500 hover:bg-[#071a2e] hover:text-white sm:px-8 ${
-                    index ? 'border-t border-slate-200 lg:border-l lg:border-t-0' : ''
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="font-serif text-2xl italic text-brand-600 group-hover:text-cyan">{number}</span>
-                    <Icon size={24} className="text-slate-400 transition group-hover:text-cyan" />
-                  </div>
-                  <div className="absolute bottom-8 left-6 right-6 sm:left-8 sm:right-8">
-                    <h3 className="max-w-[220px] font-display text-2xl font-extrabold leading-tight tracking-tight">{title}</h3>
-                    <p className="mt-4 text-sm leading-6 text-slate-500 transition group-hover:text-white/60">{text}</p>
-                    <a href="#contact" className="mt-7 inline-flex items-center gap-2 text-xs font-extrabold uppercase tracking-widest text-brand-600 group-hover:text-cyan">
-                      Learn more <ArrowUpRight size={14} />
-                    </a>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section id="experience" className="relative overflow-hidden bg-[#061729] py-24 text-white sm:py-32">
-          <div className="absolute -right-40 top-20 h-[520px] w-[520px] rounded-full bg-brand-600/20 blur-[120px]" />
-          <div className="container-wide relative grid gap-16 xl:grid-cols-[.82fr_1.18fr] xl:items-center">
-            <div>
-              <p className="kicker text-cyan">A better client experience</p>
-              <h2 className="mt-6 font-display text-4xl font-extrabold leading-[1.02] tracking-[-.045em] sm:text-6xl">
-                From “something’s wrong” to
-                <span className="font-serif font-normal italic text-cyan"> problem solved.</span>
-              </h2>
-              <p className="mt-7 max-w-xl text-base leading-8 text-white/60">
-                Clients can request service, share photos, approve an estimate and follow
-                the work from one secure place. No technical language required.
-              </p>
-              <div className="mt-9 flex flex-wrap gap-x-7 gap-y-3 text-xs font-semibold text-white/70">
-                {['Simple requests', 'Clear estimates', 'Photo evidence', 'Complete history'].map((item) => (
-                  <span key={item} className="flex items-center gap-2"><Check size={15} className="text-cyan" />{item}</span>
-                ))}
-              </div>
-              <Link to="/demo" className="mt-10 inline-flex items-center gap-3 rounded-full border border-white/25 px-7 py-4 text-sm font-bold transition hover:bg-white hover:text-navy">
-                Preview complete platform <ArrowRight size={16} />
-              </Link>
-            </div>
-
-            <div className="rounded-[28px] border border-white/15 bg-white/[.07] p-3 shadow-[0_40px_100px_rgba(0,0,0,.35)] backdrop-blur">
-              <div className="overflow-hidden rounded-[20px] bg-[#f5f7f9] text-navy">
-                <div className="flex items-center justify-between border-b border-slate-200 bg-white px-5 py-4 sm:px-7">
-                  <div className="flex items-center gap-3">
-                    <img src="https://www.sealshvac.ca/img/logo.png" alt="" className="h-9 w-9 object-contain" />
+            <div className="mt-12 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              {t.serviceItems.map(([title, text], index) => {
+                const Icon = serviceIcons[index];
+                return (
+                  <article key={title} className="group flex min-h-[310px] flex-col justify-between rounded-2xl border border-slate-200 bg-white p-7 shadow-[0_12px_45px_rgba(8,43,70,.06)] transition duration-300 hover:-translate-y-1 hover:border-brand-500 hover:bg-navy hover:text-white">
+                    <div className="flex items-start justify-between">
+                      <span className="grid h-13 w-13 place-items-center rounded-xl bg-brand-50 p-3 text-brand-600 group-hover:bg-white/10 group-hover:text-cyan"><Icon size={25} /></span>
+                      <span className="font-serif text-3xl italic text-slate-300 group-hover:text-cyan">0{index + 1}</span>
+                    </div>
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-[.18em] text-slate-400">Client portal</p>
-                      <p className="text-sm font-extrabold">Service request #0530</p>
+                      <h3 className="font-display text-xl font-extrabold">{title}</h3>
+                      <p className="mt-3 text-sm leading-6 text-slate-500 group-hover:text-white/65">{text}</p>
+                      <a href="#contact" className="mt-5 inline-flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-brand-600 group-hover:text-cyan">{t.request}<ArrowRight size={14} /></a>
                     </div>
-                  </div>
-                  <span className="hidden rounded-full bg-emerald-50 px-3 py-1.5 text-[10px] font-bold text-emerald-700 sm:block">In progress</span>
-                </div>
-                <div className="grid gap-3 p-4 sm:p-6">
-                  {workflow.map(({ icon: Icon, label, detail, state }, index) => (
-                    <div key={label} className="flex items-center gap-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-                      <span className={`grid h-11 w-11 shrink-0 place-items-center rounded-full ${index < 3 ? 'bg-brand-50 text-brand-600' : 'bg-emerald-50 text-emerald-600'}`}>
-                        <Icon size={19} />
-                      </span>
-                      <span className="min-w-0 flex-1">
-                        <b className="block text-sm">{label}</b>
-                        <small className="mt-1 block truncate text-slate-500">{detail}</small>
-                      </span>
-                      <span className="hidden text-[10px] font-bold uppercase tracking-wider text-slate-400 sm:block">{state}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+                  </article>
+                );
+              })}
+            </div>
+            <div className="mt-8 flex flex-col items-start justify-between gap-5 rounded-2xl bg-cyan px-6 py-7 text-navy md:flex-row md:items-center md:px-9">
+              <div><h3 className="font-display text-xl font-extrabold md:text-2xl">{t.quote}</h3><p className="mt-2 max-w-2xl text-sm leading-6 text-navy/70">{t.quoteText}</p></div>
+              <a href="#contact" className="inline-flex shrink-0 items-center gap-2 rounded-full bg-navy px-6 py-3.5 text-sm font-extrabold text-white">{t.request}<ArrowRight size={16} /></a>
             </div>
           </div>
         </section>
 
-        <section className="bg-[#dcecf2] py-24 sm:py-32">
-          <div className="container-wide grid gap-12 lg:grid-cols-2 lg:items-center">
-            <div className="relative min-h-[520px] overflow-hidden rounded-[28px]">
-              <img
-                src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1400&q=88"
-                alt="HVAC technician servicing equipment"
-                className="absolute inset-0 h-full w-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#061729]/80 via-transparent" />
-              <div className="absolute bottom-7 left-7 right-7 flex items-end justify-between text-white">
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[.22em] text-cyan">On-site professionalism</p>
-                  <p className="mt-2 max-w-sm font-display text-2xl font-extrabold">Care for the equipment. Respect for the home.</p>
-                </div>
-                <BadgeCheck size={34} className="hidden text-cyan sm:block" />
-              </div>
+        <section id="why" className="overflow-hidden bg-[#061d31] py-20 text-white md:py-28">
+          <div className="container-wide grid gap-14 xl:grid-cols-[.8fr_1.2fr] xl:items-start">
+            <div className="xl:sticky xl:top-10">
+              <p className="kicker text-cyan">{t.whyTag}</p>
+              <h2 className="mt-5 font-display text-4xl font-extrabold leading-[1.02] tracking-[-.045em] md:text-6xl">{t.whyTitle}</h2>
+              <p className="mt-6 max-w-xl text-base leading-8 text-white/60">{t.whyText}</p>
             </div>
-            <div className="lg:pl-12">
-              <p className="kicker">For property teams</p>
-              <h2 className="premium-title mt-5">Built for the way condominiums operate.</h2>
-              <p className="mt-7 text-base leading-8 text-slate-600">
-                Every visit affects a resident, a suite and a building team. Seals keeps
-                everyone aligned with simple communication and dependable documentation.
-              </p>
-              <div className="mt-9 space-y-5">
-                {[
-                  [Building2, 'Building and suite service history'],
-                  [MapPin, 'Clear locations and technician assignments'],
-                  [FileCheck2, 'Before-and-after photos and final reports'],
-                  [ShieldCheck, 'Secure access for authorized clients']
-                ].map(([Icon, text]) => (
-                  <div key={text} className="flex items-center gap-4 border-b border-[#b7ccd5] pb-5">
-                    <Icon size={20} className="text-brand-600" />
-                    <span className="text-sm font-bold">{text}</span>
-                  </div>
-                ))}
-              </div>
+            <div className="grid gap-px overflow-hidden rounded-2xl bg-white/15 sm:grid-cols-2">
+              {t.whyItems.map(([title, text], index) => {
+                const Icon = whyIcons[index];
+                return (
+                  <article key={title} className="min-h-[240px] bg-[#0a2740] p-7 md:p-9">
+                    <Icon className="text-cyan" size={27} />
+                    <h3 className="mt-10 font-display text-xl font-extrabold">{title}</h3>
+                    <p className="mt-3 text-sm leading-6 text-white/55">{text}</p>
+                  </article>
+                );
+              })}
             </div>
           </div>
         </section>
 
-        <section id="reviews" className="bg-white py-24 sm:py-32">
+        <section id="process" className="bg-[#f2f6f9] py-20 md:py-28">
           <div className="container-wide">
             <div className="text-center">
-              <p className="kicker justify-center">Trusted where comfort matters</p>
-              <h2 className="premium-title mx-auto mt-5 max-w-4xl">Service people remember for the right reasons.</h2>
+              <p className="kicker justify-center">{t.processTag}</p>
+              <h2 className="premium-title mx-auto mt-5 max-w-4xl">{t.processTitle}</h2>
             </div>
-            <div className="mt-14 grid gap-5 lg:grid-cols-3">
-              {reviews.map(({ quote, name, company }) => (
-                <blockquote key={company} className="rounded-2xl border border-slate-200 bg-[#f7f9fa] p-7 sm:p-9">
-                  <div className="flex gap-1 text-[#d4a64b]">
-                    {[1, 2, 3, 4, 5].map((item) => <Star key={item} size={15} fill="currentColor" />)}
-                  </div>
-                  <p className="mt-8 font-serif text-2xl leading-9 text-navy">“{quote}”</p>
-                  <footer className="mt-9 border-t border-slate-200 pt-5">
-                    <b className="block text-sm">{name}</b>
-                    <span className="mt-1 block text-xs text-slate-500">{company}</span>
-                  </footer>
-                </blockquote>
-              ))}
+            <div className="relative mt-14 grid gap-4 lg:grid-cols-4">
+              <div className="absolute left-[12%] right-[12%] top-10 hidden h-px bg-slate-300 lg:block" />
+              {t.processItems.map(([number, title, text], index) => {
+                const Icon = processIcons[index];
+                return (
+                  <article key={title} className="relative rounded-2xl border border-slate-200 bg-white p-7">
+                    <span className="relative z-10 grid h-14 w-14 place-items-center rounded-full bg-navy text-cyan shadow-[0_0_0_8px_#f2f6f9]"><Icon size={22} /></span>
+                    <span className="mt-8 block text-[10px] font-extrabold uppercase tracking-[.2em] text-brand-600">{number}</span>
+                    <h3 className="mt-2 font-display text-xl font-extrabold">{title}</h3>
+                    <p className="mt-3 text-sm leading-6 text-slate-500">{text}</p>
+                  </article>
+                );
+              })}
             </div>
           </div>
         </section>
 
-        <section id="contact" className="bg-[#061729] py-24 text-white sm:py-32">
-          <div className="container-wide grid gap-14 lg:grid-cols-[.75fr_1.25fr]">
-            <div>
-              <p className="kicker text-cyan">Request service</p>
-              <h2 className="mt-6 font-display text-5xl font-extrabold leading-[.95] tracking-[-.05em] sm:text-6xl">
-                Tell us what’s
-                <span className="font-serif font-normal italic text-cyan"> happening.</span>
-              </h2>
-              <p className="mt-7 max-w-md text-base leading-8 text-white/60">
-                No technical explanation needed. Describe the problem in your own words and
-                our team will take it from there.
-              </p>
-              <div className="mt-10 space-y-4 text-sm text-white/80">
-                <p className="flex items-center gap-3"><Phone size={18} className="text-cyan" /> Call Seals HVAC</p>
-                <p className="flex items-center gap-3"><Clock3 size={18} className="text-cyan" /> Serving Toronto and the GTA</p>
+        <section id="property" className="bg-white py-20 md:py-28">
+          <div className="container-wide grid overflow-hidden rounded-[28px] bg-navy lg:grid-cols-[.9fr_1.1fr]">
+            <div className="p-7 text-white md:p-12 lg:p-14">
+              <p className="kicker text-cyan">{t.portalTag}</p>
+              <h2 className="mt-5 font-display text-4xl font-extrabold leading-[1.02] tracking-[-.045em] md:text-5xl">{t.portalTitle}</h2>
+              <p className="mt-6 text-base leading-8 text-white/60">{t.portalText}</p>
+              <div className="mt-7 space-y-3">
+                {t.portalList.map((item) => <p key={item} className="flex items-center gap-3 text-sm font-bold text-white/80"><CheckCircle2 size={18} className="text-cyan" />{item}</p>)}
+              </div>
+              <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+                <Link to="/demo" className="inline-flex items-center justify-center gap-2 rounded-full bg-cyan px-6 py-3.5 text-sm font-extrabold text-navy">{t.portalDemo}<ArrowRight size={16} /></Link>
+                <Link to="/login" className="inline-flex items-center justify-center gap-2 rounded-full border border-white/25 px-6 py-3.5 text-sm font-bold text-white">{t.portalLogin}</Link>
               </div>
             </div>
+            <div className="relative min-h-[440px] bg-[#e8f0f5] p-5 md:p-10">
+              <div className="h-full overflow-hidden rounded-2xl bg-white shadow-2xl">
+                <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+                  <div className="flex items-center gap-3"><Building2 className="text-brand-600" /><div><b className="block text-sm">Residencias ELORA</b><small className="text-slate-400">Building client portal</small></div></div>
+                  <span className="rounded-full bg-emerald-50 px-3 py-1 text-[10px] font-extrabold text-emerald-700">ACTIVE</span>
+                </div>
+                <div className="grid gap-3 p-5">
+                  {[
+                    ['Suite 530 · No cooling', 'Quote ready', 'bg-amber-50 text-amber-700'],
+                    ['Suite 214 · Fan coil noise', 'Scheduled', 'bg-blue-50 text-blue-700'],
+                    ['Suite 806 · Preventive service', 'Completed', 'bg-emerald-50 text-emerald-700']
+                  ].map(([title, status, tone], index) => (
+                    <div key={title} className="rounded-xl border border-slate-200 p-4">
+                      <div className="flex items-start justify-between gap-3"><div><small className="text-slate-400">SHV-10{53 - index}</small><b className="mt-1 block text-sm">{title}</b></div><span className={`rounded-full px-2.5 py-1 text-[9px] font-extrabold uppercase ${tone}`}>{status}</span></div>
+                      <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-slate-100"><div className="h-full rounded-full bg-brand-600" style={{ width: `${80 - index * 25}%` }} /></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
-            <form onSubmit={submit} className="grid gap-5 rounded-[28px] border border-white/15 bg-white/[.07] p-6 backdrop-blur sm:grid-cols-2 sm:p-9">
-              <label>
-                <span className="dark-label">Name</span>
-                <input className="dark-input" name="nombre" required placeholder="Your full name" />
-              </label>
-              <label>
-                <span className="dark-label">Email</span>
-                <input className="dark-input" type="email" name="email" required placeholder="name@email.com" />
-              </label>
-              <label>
-                <span className="dark-label">Phone</span>
-                <input className="dark-input" name="telefono" placeholder="Your phone number" />
-              </label>
-              <label>
-                <span className="dark-label">Service</span>
-                <select className="dark-input" name="servicio" required defaultValue="">
-                  <option value="" disabled>Select a service</option>
-                  <option>HVAC repair</option>
-                  <option>Fan coil service</option>
-                  <option>Preventive maintenance</option>
-                  <option>Installation or replacement</option>
-                </select>
-              </label>
-              <label className="sm:col-span-2">
-                <span className="dark-label">What’s happening?</span>
-                <textarea className="dark-input min-h-32 resize-y" name="mensaje" required minLength={10} placeholder="Tell us what you are experiencing..." />
-              </label>
-              <div className="flex flex-col items-start justify-between gap-4 sm:col-span-2 sm:flex-row sm:items-center">
-                <button disabled={sending} className="inline-flex items-center gap-3 rounded-full bg-cyan px-7 py-4 text-sm font-extrabold text-navy transition hover:bg-white disabled:opacity-60">
-                  {sending ? 'Sending…' : 'Send request'} <ArrowRight size={16} />
-                </button>
+        <section className="relative overflow-hidden bg-cyan py-16 text-navy md:py-20">
+          <Snowflake className="absolute -right-16 -top-24 h-80 w-80 text-white/20" strokeWidth={1} />
+          <div className="container-site relative flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-center">
+            <div><p className="text-[10px] font-extrabold uppercase tracking-[.2em]">{t.finalTag}</p><h2 className="mt-3 max-w-3xl font-display text-3xl font-extrabold leading-tight tracking-[-.04em] md:text-5xl">{t.finalTitle}</h2><p className="mt-4 max-w-2xl text-sm leading-7 text-navy/70">{t.finalText}</p></div>
+            <a href="#contact" className="inline-flex shrink-0 items-center gap-3 rounded-full bg-navy px-7 py-4 text-sm font-extrabold text-white">{t.request}<ArrowRight size={17} /></a>
+          </div>
+        </section>
+
+        <section id="contact" className="bg-[#041725] py-20 text-white md:py-28">
+          <div className="container-wide grid gap-12 lg:grid-cols-[.72fr_1.28fr]">
+            <div>
+              <p className="kicker text-cyan">{t.contactTag}</p>
+              <h2 className="mt-5 font-display text-4xl font-extrabold leading-[1.02] tracking-[-.045em] md:text-6xl">{t.contactTitle}</h2>
+              <p className="mt-6 max-w-md text-base leading-8 text-white/60">{t.contactText}</p>
+              <div className="mt-9 space-y-4 text-sm font-bold text-white/75">
+                <p className="flex items-center gap-3"><Clock3 size={19} className="text-cyan" /> Toronto & Greater Toronto Area</p>
+                <p className="flex items-center gap-3"><ShieldCheck size={19} className="text-cyan" /> Authorized client portal available</p>
+              </div>
+            </div>
+            <form onSubmit={submit} className="grid gap-4 rounded-2xl border border-white/15 bg-white/[.06] p-5 backdrop-blur md:grid-cols-2 md:p-8">
+              <label><span className="dark-label">{t.fields[0]}</span><input className="dark-input" name="nombre" required placeholder={t.fields[0]} /></label>
+              <label><span className="dark-label">{t.fields[1]}</span><input className="dark-input" type="email" name="email" required placeholder="name@email.com" /></label>
+              <label><span className="dark-label">{t.fields[2]}</span><input className="dark-input" name="telefono" placeholder={t.fields[2]} /></label>
+              <label><span className="dark-label">{t.fields[3]}</span><select className="dark-input" name="servicio" required defaultValue="">{t.serviceOptions.map((item, index) => <option key={item} value={index ? item : ''} disabled={!index}>{item}</option>)}</select></label>
+              <label className="md:col-span-2"><span className="dark-label">{t.fields[4]}</span><input className="dark-input" name="ubicacion" placeholder={t.fields[4]} /></label>
+              <label className="md:col-span-2"><span className="dark-label">{t.fields[5]}</span><textarea className="dark-input min-h-32 resize-y" name="mensaje" required minLength={10} placeholder={t.fields[5]} /></label>
+              <div className="flex flex-col items-start justify-between gap-4 md:col-span-2 md:flex-row md:items-center">
+                <button disabled={sending} className="inline-flex min-h-13 items-center gap-3 rounded-full bg-cyan px-7 py-3.5 text-sm font-extrabold text-navy transition hover:bg-white disabled:opacity-60">{sending ? t.sending : t.send}<ArrowRight size={16} /></button>
                 {sent && <p className="max-w-xs text-xs leading-5 text-cyan">{sent}</p>}
               </div>
             </form>
@@ -469,38 +414,21 @@ export default function Landing() {
         </section>
       </main>
 
-      <footer className="border-t border-white/10 bg-[#03101e] py-12 text-white">
-        <div className="container-wide">
-          <div className="grid gap-10 border-b border-white/10 pb-10 md:grid-cols-[1.5fr_1fr_1fr]">
-            <div>
-              <Brand light />
-              <p className="mt-5 max-w-sm text-sm leading-6 text-white/45">
-                Condominium HVAC repair, maintenance and installation across Toronto and the GTA.
-              </p>
-            </div>
-            <div>
-              <p className="footer-title">Explore</p>
-              <div className="mt-4 space-y-2 text-sm text-white/55">
-                <a href="#about" className="block hover:text-white">About</a>
-                <a href="#services" className="block hover:text-white">Services</a>
-                <a href="#reviews" className="block hover:text-white">Reviews</a>
-              </div>
-            </div>
-            <div>
-              <p className="footer-title">Client access</p>
-              <div className="mt-4 space-y-2 text-sm text-white/55">
-                <Link to="/login" className="block hover:text-white">Client portal</Link>
-                <Link to="/admin/login" className="block hover:text-white">Team sign in</Link>
-                <a href="#contact" className="block hover:text-white">Request service</a>
-              </div>
-            </div>
-          </div>
-          <div className="flex flex-col justify-between gap-3 pt-7 text-[11px] text-white/35 sm:flex-row">
-            <p>© 2026 Seals HVAC Services. All rights reserved.</p>
-            <p>Toronto, Ontario · Canada</p>
+      <footer className="border-t border-white/10 bg-[#020e18] pb-24 pt-12 text-white md:pb-12">
+        <div className="container-wide flex flex-col justify-between gap-8 border-b border-white/10 pb-9 md:flex-row">
+          <div><Brand light /><p className="mt-5 max-w-md text-sm leading-6 text-white/45">{t.footer}</p></div>
+          <div className="grid grid-cols-2 gap-12 text-sm text-white/55">
+            <div className="space-y-3"><b className="block text-[10px] uppercase tracking-widest text-cyan">Services</b><a href="#services" className="block hover:text-white">HVAC service</a><a href="#property" className="block hover:text-white">Property managers</a></div>
+            <div className="space-y-3"><b className="block text-[10px] uppercase tracking-widest text-cyan">Access</b><Link to="/login" className="block hover:text-white">{t.login}</Link><Link to="/demo" className="block hover:text-white">Portal demo</Link></div>
           </div>
         </div>
+        <div className="container-wide flex flex-col justify-between gap-2 pt-6 text-[11px] text-white/35 sm:flex-row"><p>{t.copyright}</p><p>Toronto, Ontario · Canada</p></div>
       </footer>
+
+      <div className="fixed inset-x-0 bottom-0 z-50 grid grid-cols-[1fr_auto] gap-2 border-t border-slate-200 bg-white p-3 shadow-[0_-10px_30px_rgba(4,23,37,.12)] md:hidden">
+        <a href="#contact" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-brand-600 px-5 text-sm font-extrabold text-white">{t.sticky}<ArrowRight size={16} /></a>
+        <Link to="/login" className="grid min-h-12 min-w-12 place-items-center rounded-full border border-slate-200 text-navy" aria-label={t.login}><Building2 size={19} /></Link>
+      </div>
     </div>
   );
 }
