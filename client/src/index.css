@@ -54,7 +54,14 @@
 }
 .nav-link:hover::after { transform: scaleX(1); transform-origin: left; }
 .anime-hero-title { perspective: 900px; }
-.motion-ready [data-anime-item] { opacity: 0; }
+.anime-scroll-ready [data-anime-item] { opacity: 0; }
+.anime-scroll-ready .anime-section-word { opacity: 0; }
+[data-anime-heading] { perspective: 800px; }
+.anime-section-word { transform-origin: 50% 100%; will-change: opacity, transform; }
+.landing-scroll-progress {
+  transition: transform .12s linear;
+  will-change: transform;
+}
 
 .hero-grid {
   background-image: linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
@@ -100,7 +107,13 @@
 }
 .service-card:hover::before, .why-card:hover::before, .process-card:hover::before { transform: translateX(120%); }
 .service-card:hover svg, .why-card:hover svg { animation: icon-tilt .55s ease; }
-.team-photo img { transition: transform 1.1s cubic-bezier(.22,1,.36,1), filter .8s ease; }
+.parallax-media {
+  --parallax-y: 0px;
+  transform: translate3d(0, var(--parallax-y), 0) scale(1.08);
+  transition: transform .35s linear, filter .8s ease;
+  will-change: transform;
+}
+.team-photo img { transition: transform .35s linear, filter .8s ease; }
 .team-photo::after {
   content: "";
   position: absolute;
@@ -109,7 +122,7 @@
   border-radius: inherit;
   pointer-events: none;
 }
-.team-photo:hover img { transform: scale(1.045); filter: saturate(1.08) contrast(1.03); }
+.team-photo:hover img { transform: translate3d(0, var(--parallax-y), 0) scale(1.115); filter: saturate(1.08) contrast(1.03); }
 .team-photo figcaption { transition: transform .6s cubic-bezier(.22,1,.36,1); }
 .team-photo:hover figcaption { transform: translateY(-5px); }
 .results-showcase { position: relative; }
@@ -136,6 +149,7 @@
 }
 .media-panel video { filter: saturate(.9) contrast(1.04); transition: filter .7s ease, transform 1.2s cubic-bezier(.22,1,.36,1); }
 .media-panel:hover video { filter: saturate(1.05) contrast(1.02); transform: scale(1.018); }
+.media-panel:hover .parallax-media { transform: translate3d(0, var(--parallax-y), 0) scale(1.115); filter: saturate(1.06) contrast(1.03); }
 .before-after-visual::after {
   content: "";
   position: absolute;
@@ -170,18 +184,11 @@
 .icon-pop { transition: transform .35s ease; }
 [data-reveal]:hover > .icon-pop { transform: scale(1.15) rotate(-5deg); }
 
-.motion-ready [data-reveal] {
+.anime-scroll-ready [data-reveal] {
   opacity: 0;
-  transition: opacity .8s cubic-bezier(.22,1,.36,1), transform .8s cubic-bezier(.22,1,.36,1);
-  transition-delay: var(--reveal-delay, 0ms);
   will-change: opacity, transform;
 }
-.motion-ready [data-reveal="up"] { transform: translateY(34px); }
-.motion-ready [data-reveal="left"] { transform: translateX(-38px); }
-.motion-ready [data-reveal="right"] { transform: translateX(38px); }
-.motion-ready [data-reveal="scale"] { transform: scale(.965); }
-.motion-ready [data-reveal="line"] { opacity: 1; transform: scaleX(0); transition-duration: 1.25s; }
-.motion-ready [data-reveal].is-visible { opacity: 1; transform: none; }
+.anime-scroll-ready [data-reveal="line"] { transform-origin: left center; }
 
 @keyframes header-enter { from { opacity: 0; transform: translateY(-18px); } }
 @keyframes hero-breathe { from { transform: scale(1.01); } to { transform: scale(1.08); } }
@@ -206,8 +213,9 @@
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
-  .motion-ready [data-reveal], .hero-enter, .trust-item, .portal-ticket { opacity: 1 !important; transform: none !important; filter: none !important; }
-  .motion-ready [data-anime-item], .anime-hero-word { opacity: 1 !important; transform: none !important; }
+  .anime-scroll-ready [data-reveal], .hero-enter, .trust-item, .portal-ticket { opacity: 1 !important; transform: none !important; filter: none !important; }
+  .anime-scroll-ready [data-anime-item], .anime-hero-word, .anime-section-word { opacity: 1 !important; transform: none !important; }
+  .parallax-media { transform: none !important; }
   .portal-progress { transform: scaleX(1) !important; }
 }
 @media print {

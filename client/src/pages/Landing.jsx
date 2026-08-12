@@ -206,6 +206,16 @@ const serviceIcons = [Wrench, Wind, Gauge, ThermometerSun];
 const whyIcons = [MessageSquareText, ShieldCheck, ImageIcon, UserRoundCheck];
 const processIcons = [FileText, ClipboardCheck, CalendarCheck2, CheckCircle2];
 
+function MotionHeading({ children, className = '' }) {
+  return (
+    <h2 data-anime-heading className={className} aria-label={children}>
+      {children.split(' ').map((word, index) => (
+        <span aria-hidden="true" className="anime-section-word mr-[.22em] inline-block" key={`${word}-${index}`}>{word}</span>
+      ))}
+    </h2>
+  );
+}
+
 export default function Landing() {
   const [menu, setMenu] = useState(false);
   const [lang, setLang] = useState('en');
@@ -216,26 +226,83 @@ export default function Landing() {
   useEffect(() => {
     const root = document.documentElement;
     const elements = [...document.querySelectorAll('[data-reveal]')];
-    root.classList.add('motion-ready');
+    const animations = [];
+    root.classList.add('anime-scroll-ready');
 
     if (!('IntersectionObserver' in window)) {
       elements.forEach((element) => element.classList.add('is-visible'));
+      root.classList.remove('anime-scroll-ready');
       return undefined;
     }
 
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
+          const variant = entry.target.dataset.reveal;
+          const delay = Number.parseInt(getComputedStyle(entry.target).getPropertyValue('--reveal-delay'), 10) || 0;
+          const motion = {
+            opacity: [0, 1],
+            duration: variant === 'line' ? 1250 : 900,
+            delay,
+            ease: variant === 'scale' ? spring({ bounce: .12, duration: 850 }) : 'outExpo'
+          };
+
+          if (variant === 'left') motion.x = [-64, 0];
+          if (variant === 'right') motion.x = [64, 0];
+          if (variant === 'up') motion.y = [52, 0];
+          if (variant === 'scale') {
+            motion.scale = [.91, 1];
+            motion.rotateX = [4, 0];
+          }
+          if (variant === 'line') motion.scaleX = [0, 1];
+
           entry.target.classList.add('is-visible');
+          animations.push(animate(entry.target, motion));
           observer.unobserve(entry.target);
         }
       });
-    }, { rootMargin: '0px 0px -10% 0px', threshold: 0.12 });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.1 });
 
     elements.forEach((element) => observer.observe(element));
     return () => {
       observer.disconnect();
-      root.classList.remove('motion-ready');
+      animations.forEach((animation) => animation.revert());
+      root.classList.remove('anime-scroll-ready');
+    };
+  }, []);
+
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
+
+    const progress = document.querySelector('.landing-scroll-progress');
+    const parallaxItems = [...document.querySelectorAll('[data-parallax]')];
+    let frame;
+
+    const updateScrollMotion = () => {
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const scrollProgress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
+      if (progress) progress.style.transform = `scaleX(${scrollProgress})`;
+
+      parallaxItems.forEach((item) => {
+        const rect = item.getBoundingClientRect();
+        const viewportProgress = (rect.top + rect.height / 2 - window.innerHeight / 2) / window.innerHeight;
+        const distance = Math.max(-26, Math.min(26, viewportProgress * -24));
+        item.style.setProperty('--parallax-y', `${distance}px`);
+      });
+      frame = undefined;
+    };
+
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(updateScrollMotion);
+    };
+
+    updateScrollMotion();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      if (frame) cancelAnimationFrame(frame);
     };
   }, []);
 
@@ -272,8 +339,27 @@ export default function Landing() {
     }, { rootMargin: '0px 0px -12% 0px', threshold: .14 });
 
     groups.forEach((group) => groupObserver.observe(group));
+
+    const headings = [...document.querySelectorAll('[data-anime-heading]')];
+    const headingObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        animations.push(animate(entry.target.querySelectorAll('.anime-section-word'), {
+          opacity: [0, 1],
+          y: ['.9em', 0],
+          rotateX: [55, 0],
+          delay: stagger(38),
+          duration: 820,
+          ease: 'outExpo'
+        }));
+        headingObserver.unobserve(entry.target);
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: .3 });
+
+    headings.forEach((heading) => headingObserver.observe(heading));
     return () => {
       groupObserver.disconnect();
+      headingObserver.disconnect();
       animations.forEach((animation) => animation.revert());
     };
   }, [lang]);
@@ -296,6 +382,7 @@ export default function Landing() {
 
   return (
     <div className="overflow-hidden bg-white text-[#092842]">
+      <div className="landing-scroll-progress fixed inset-x-0 top-0 z-[100] h-1 origin-left scale-x-0 bg-cyan shadow-[0_0_16px_rgba(69,194,223,.8)]" aria-hidden="true" />
       <header className="site-header-enter absolute inset-x-0 top-0 z-50 border-b border-white/20">
         <div className="container-wide flex h-20 items-center justify-between md:h-24">
           <Brand light compact />
@@ -370,7 +457,7 @@ export default function Landing() {
           <div className="container-site grid gap-12 lg:grid-cols-[1.05fr_.95fr] lg:items-center">
             <div data-reveal="left">
               <p className="kicker">{t.introTag}</p>
-              <h2 className="mt-5 font-display text-4xl font-extrabold leading-[1.02] tracking-[-.045em] text-navy md:text-6xl">{t.introTitle}</h2>
+              <MotionHeading className="mt-5 font-display text-4xl font-extrabold leading-[1.02] tracking-[-.045em] text-navy md:text-6xl">{t.introTitle}</MotionHeading>
             </div>
             <div data-reveal="right">
               <p className="text-base leading-8 text-slate-600 md:text-lg">{t.introText}</p>
@@ -385,7 +472,7 @@ export default function Landing() {
           <div className="container-wide">
             <div className="max-w-3xl" data-reveal="up">
               <p className="kicker">{t.servicesTag}</p>
-              <h2 className="premium-title mt-5">{t.servicesTitle}</h2>
+              <MotionHeading className="premium-title mt-5">{t.servicesTitle}</MotionHeading>
               <p className="mt-6 max-w-2xl text-base leading-8 text-slate-600">{t.servicesText}</p>
             </div>
             <div data-anime-stagger className="mt-12 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -418,7 +505,7 @@ export default function Landing() {
             <div className="grid gap-10 border-t border-slate-200 pt-20 lg:grid-cols-[.8fr_1.2fr] lg:items-end">
               <div data-reveal="left">
                 <p className="kicker">{t.teamTag}</p>
-                <h2 className="mt-5 font-display text-4xl font-extrabold leading-[1.02] tracking-[-.045em] text-navy md:text-6xl">{t.teamTitle}</h2>
+                <MotionHeading className="mt-5 font-display text-4xl font-extrabold leading-[1.02] tracking-[-.045em] text-navy md:text-6xl">{t.teamTitle}</MotionHeading>
               </div>
               <p data-reveal="right" className="max-w-2xl text-base leading-8 text-slate-600 lg:ml-auto lg:text-lg">{t.teamText}</p>
             </div>
@@ -428,7 +515,8 @@ export default function Landing() {
                 <img
                   src="/images/seals-team-service.webp"
                   alt="Two Seals HVAC technicians servicing condominium equipment in Toronto"
-                  className="h-full w-full object-cover"
+                  data-parallax
+                  className="parallax-media h-full w-full object-cover"
                   loading="lazy"
                   decoding="async"
                 />
@@ -444,7 +532,8 @@ export default function Landing() {
                 <img
                   src="/images/seals-client-care.webp"
                   alt="Seals HVAC technician explaining service details to a condominium property manager"
-                  className="h-full w-full object-cover"
+                  data-parallax
+                  className="parallax-media h-full w-full object-cover"
                   loading="lazy"
                   decoding="async"
                 />
@@ -460,7 +549,8 @@ export default function Landing() {
                 <img
                   src="/images/seals-in-suite-service.webp"
                   alt="Seals HVAC technician carefully servicing a fan coil inside a condominium suite"
-                  className="h-full w-full object-cover object-[center_45%]"
+                  data-parallax
+                  className="parallax-media h-full w-full object-cover object-[center_45%]"
                   loading="lazy"
                   decoding="async"
                 />
@@ -491,7 +581,7 @@ export default function Landing() {
             <div className="grid gap-8 lg:grid-cols-[.78fr_1.22fr] lg:items-end">
               <div data-reveal="left">
                 <p className="kicker">{t.resultsTag}</p>
-                <h2 className="premium-title mt-5">{t.resultsTitle}</h2>
+                <MotionHeading className="premium-title mt-5">{t.resultsTitle}</MotionHeading>
               </div>
               <p data-reveal="right" className="max-w-2xl text-base leading-8 text-slate-600 lg:ml-auto lg:text-lg">{t.resultsText}</p>
             </div>
@@ -519,7 +609,7 @@ export default function Landing() {
               </article>
 
               <article data-reveal="right" className="media-panel group relative min-h-[430px] overflow-hidden rounded-[30px] bg-navy text-white md:min-h-[600px]">
-                <img src="/images/seals-service-proof-v2.webp" alt="Seals HVAC technician documenting a completed condominium service visit" className="h-full w-full object-cover object-center transition duration-1000 group-hover:scale-[1.035]" loading="lazy" decoding="async" />
+                <img src="/images/seals-service-proof-v2.webp" alt="Seals HVAC technician documenting a completed condominium service visit" data-parallax className="parallax-media h-full w-full object-cover object-center" loading="lazy" decoding="async" />
                 <div className="absolute inset-0 bg-gradient-to-t from-navy via-navy/5 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-6 md:p-9">
                   <span className="inline-flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[.18em] text-cyan"><Camera size={16} />{t.proofLabel}</span>
@@ -530,7 +620,7 @@ export default function Landing() {
 
             <article data-reveal="scale" className="before-after-card mt-5 grid overflow-hidden rounded-[30px] bg-white shadow-[0_30px_80px_rgba(4,27,46,.12)] xl:grid-cols-[1.35fr_.65fr]">
               <div className="before-after-visual relative min-h-[360px] overflow-hidden bg-slate-200 md:min-h-[540px]">
-                <img src="/images/seals-before-after-v2.webp" alt="Before and after professional fan coil maintenance" className="absolute inset-0 h-full w-full object-cover" loading="lazy" decoding="async" />
+                <img src="/images/seals-before-after-v2.webp" alt="Before and after professional fan coil maintenance" data-parallax className="parallax-media absolute inset-0 h-full w-full object-cover" loading="lazy" decoding="async" />
                 <div className="comparison-line absolute bottom-0 left-1/2 top-0 w-px bg-white/80 shadow-[0_0_18px_rgba(255,255,255,.9)]" aria-hidden="true"><span className="absolute left-1/2 top-1/2 grid h-11 w-11 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border-4 border-white bg-cyan text-xs font-black text-navy shadow-xl">↔</span></div>
                 <span className="absolute left-4 top-4 rounded-full bg-navy/85 px-4 py-2 text-[10px] font-extrabold uppercase tracking-wider text-white backdrop-blur md:left-7 md:top-7">{t.before}</span>
                 <span className="absolute right-4 top-4 rounded-full bg-cyan px-4 py-2 text-[10px] font-extrabold uppercase tracking-wider text-navy md:right-7 md:top-7">{t.after}</span>
@@ -552,7 +642,7 @@ export default function Landing() {
           <div className="container-wide grid gap-14 xl:grid-cols-[.8fr_1.2fr] xl:items-start">
             <div className="xl:sticky xl:top-10" data-reveal="left">
               <p className="kicker text-cyan">{t.whyTag}</p>
-              <h2 className="mt-5 font-display text-4xl font-extrabold leading-[1.02] tracking-[-.045em] md:text-6xl">{t.whyTitle}</h2>
+              <MotionHeading className="mt-5 font-display text-4xl font-extrabold leading-[1.02] tracking-[-.045em] md:text-6xl">{t.whyTitle}</MotionHeading>
               <p className="mt-6 max-w-xl text-base leading-8 text-white/60">{t.whyText}</p>
             </div>
             <div data-anime-stagger className="grid gap-px overflow-hidden rounded-2xl bg-white/15 sm:grid-cols-2">
@@ -574,7 +664,7 @@ export default function Landing() {
           <div className="container-wide">
             <div className="text-center" data-reveal="up">
               <p className="kicker justify-center">{t.processTag}</p>
-              <h2 className="premium-title mx-auto mt-5 max-w-4xl">{t.processTitle}</h2>
+              <MotionHeading className="premium-title mx-auto mt-5 max-w-4xl">{t.processTitle}</MotionHeading>
             </div>
             <div data-anime-stagger className="relative mt-14 grid gap-4 lg:grid-cols-4">
               <div data-reveal="line" className="process-line absolute left-[12%] right-[12%] top-10 hidden h-px origin-left bg-slate-300 lg:block" />
@@ -597,7 +687,7 @@ export default function Landing() {
           <div data-reveal="scale" className="container-wide grid overflow-hidden rounded-[28px] bg-navy lg:grid-cols-[.9fr_1.1fr]">
             <div className="p-7 text-white md:p-12 lg:p-14">
               <p className="kicker text-cyan">{t.portalTag}</p>
-              <h2 className="mt-5 font-display text-4xl font-extrabold leading-[1.02] tracking-[-.045em] md:text-5xl">{t.portalTitle}</h2>
+              <MotionHeading className="mt-5 font-display text-4xl font-extrabold leading-[1.02] tracking-[-.045em] md:text-5xl">{t.portalTitle}</MotionHeading>
               <p className="mt-6 text-base leading-8 text-white/60">{t.portalText}</p>
               <div className="mt-7 space-y-3">
                 {t.portalList.map((item, index) => <p key={item} data-reveal="left" style={{ '--reveal-delay': `${index * 80}ms` }} className="flex items-center gap-3 text-sm font-bold text-white/80"><CheckCircle2 size={18} className="text-cyan" />{item}</p>)}
@@ -633,7 +723,7 @@ export default function Landing() {
         <section className="relative overflow-hidden bg-cyan py-16 text-navy md:py-20">
           <Snowflake className="snowflake-drift absolute -right-16 -top-24 h-80 w-80 text-white/20" strokeWidth={1} />
           <div data-reveal="up" className="container-site relative flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-center">
-            <div><p className="text-[10px] font-extrabold uppercase tracking-[.2em]">{t.finalTag}</p><h2 className="mt-3 max-w-3xl font-display text-3xl font-extrabold leading-tight tracking-[-.04em] md:text-5xl">{t.finalTitle}</h2><p className="mt-4 max-w-2xl text-sm leading-7 text-navy/70">{t.finalText}</p></div>
+            <div><p className="text-[10px] font-extrabold uppercase tracking-[.2em]">{t.finalTag}</p><MotionHeading className="mt-3 max-w-3xl font-display text-3xl font-extrabold leading-tight tracking-[-.04em] md:text-5xl">{t.finalTitle}</MotionHeading><p className="mt-4 max-w-2xl text-sm leading-7 text-navy/70">{t.finalText}</p></div>
             <a href="#contact" className="inline-flex shrink-0 items-center gap-3 rounded-full bg-navy px-7 py-4 text-sm font-extrabold text-white">{t.request}<ArrowRight size={17} /></a>
           </div>
         </section>
@@ -642,7 +732,7 @@ export default function Landing() {
           <div className="container-wide grid gap-12 lg:grid-cols-[.72fr_1.28fr]">
             <div data-reveal="left">
               <p className="kicker text-cyan">{t.contactTag}</p>
-              <h2 className="mt-5 font-display text-4xl font-extrabold leading-[1.02] tracking-[-.045em] md:text-6xl">{t.contactTitle}</h2>
+              <MotionHeading className="mt-5 font-display text-4xl font-extrabold leading-[1.02] tracking-[-.045em] md:text-6xl">{t.contactTitle}</MotionHeading>
               <p className="mt-6 max-w-md text-base leading-8 text-white/60">{t.contactText}</p>
               <div className="mt-9 space-y-4 text-sm font-bold text-white/75">
                 <p className="flex items-center gap-3"><Clock3 size={19} className="text-cyan" /> Toronto & Greater Toronto Area</p>
