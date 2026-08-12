@@ -112,6 +112,40 @@
 .team-photo:hover img { transform: scale(1.045); filter: saturate(1.08) contrast(1.03); }
 .team-photo figcaption { transition: transform .6s cubic-bezier(.22,1,.36,1); }
 .team-photo:hover figcaption { transform: translateY(-5px); }
+.results-showcase { position: relative; }
+.results-showcase::before {
+  content: "";
+  position: absolute;
+  width: 38rem;
+  height: 38rem;
+  right: -18rem;
+  top: 8rem;
+  border-radius: 50%;
+  border: 1px solid rgba(16, 116, 174, .12);
+  box-shadow: 0 0 0 6rem rgba(69, 194, 223, .025), 0 0 0 12rem rgba(16, 116, 174, .018);
+  pointer-events: none;
+}
+.media-panel { box-shadow: 0 24px 70px rgba(4, 27, 46, .13); }
+.media-panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: inherit;
+  pointer-events: none;
+}
+.media-panel video { filter: saturate(.9) contrast(1.04); transition: filter .7s ease, transform 1.2s cubic-bezier(.22,1,.36,1); }
+.media-panel:hover video { filter: saturate(1.05) contrast(1.02); transform: scale(1.018); }
+.before-after-visual::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 38%, rgba(255,255,255,.2) 49%, transparent 60%);
+  background-size: 240% 100%;
+  animation: proof-scan 7s ease-in-out infinite;
+  pointer-events: none;
+}
+.comparison-line { animation: comparison-pulse 3s ease-in-out infinite; }
 .quote-banner { position: relative; }
 .quote-banner::after {
   content: "";
@@ -162,6 +196,8 @@
 @keyframes ticket-enter { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: none; } }
 @keyframes progress-grow { to { transform: scaleX(1); } }
 @keyframes snowflake-drift { 50% { transform: translate(-20px, 18px) rotate(180deg); } to { transform: rotate(360deg); } }
+@keyframes proof-scan { 0%, 25% { background-position: 180% 0; } 70%, 100% { background-position: -140% 0; } }
+@keyframes comparison-pulse { 0%, 100% { opacity: .7; } 50% { opacity: 1; } }
 
 @media (hover: none) {
   .service-card:active { transform: scale(.985); }

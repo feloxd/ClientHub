@@ -6,9 +6,11 @@ import {
   BadgeCheck,
   Building2,
   CalendarCheck2,
+  Camera,
   Check,
   CheckCircle2,
   ChevronRight,
+  CirclePlay,
   ClipboardCheck,
   Clock3,
   FileText,
@@ -61,6 +63,19 @@ const copy = {
       ['Clear communication', 'Straightforward updates for building and property management teams.'],
       ['Respect for every home', 'Organized work areas, protective care and complete evidence.']
     ],
+    resultsTag: 'See the Seals standard',
+    resultsTitle: 'Real service. Visible proof. Zero guesswork.',
+    resultsText: 'See how we work inside occupied condominiums and how every visit becomes a clear, verifiable service record.',
+    videoLabel: 'Inside a Seals service visit',
+    videoTitle: 'Professional care from arrival to final check.',
+    proofLabel: 'Service documentation',
+    proofTitle: 'We show what we found and what was completed.',
+    before: 'Before service',
+    after: 'After service',
+    caseTag: 'Fan coil maintenance · Condominium suite',
+    caseTitle: 'A result property managers can see.',
+    caseText: 'Clear visual evidence helps the building, resident and technician stay aligned—before approval and after completion.',
+    resultPoints: ['Photo evidence', 'Plain-language notes', 'Complete portal history'],
     whyTag: 'Why choose Seals',
     whyTitle: 'Professional service you can understand and verify.',
     whyText: 'Every service call is handled with the building, the resident and the equipment in mind. You always know what was found, what was approved and what was completed.',
@@ -133,6 +148,19 @@ const copy = {
       ['Communication claire', 'Des mises à jour simples pour les gestionnaires d’immeubles.'],
       ['Respect de chaque domicile', 'Espace protégé, travail organisé et preuves complètes.']
     ],
+    resultsTag: 'Découvrez la norme Seals',
+    resultsTitle: 'Un vrai service. Des preuves visibles. Aucune incertitude.',
+    resultsText: 'Voyez comment nous travaillons dans les copropriétés occupées et comment chaque visite devient un dossier de service clair et vérifiable.',
+    videoLabel: 'Au cœur d’une visite Seals',
+    videoTitle: 'Un service professionnel de l’arrivée à la vérification finale.',
+    proofLabel: 'Documentation du service',
+    proofTitle: 'Nous montrons ce que nous avons trouvé et réalisé.',
+    before: 'Avant le service',
+    after: 'Après le service',
+    caseTag: 'Entretien du ventilo-convecteur · Unité en copropriété',
+    caseTitle: 'Un résultat visible pour les gestionnaires.',
+    caseText: 'Des preuves visuelles claires permettent à l’immeuble, au résident et au technicien de rester alignés avant l’autorisation et après les travaux.',
+    resultPoints: ['Preuves photographiques', 'Notes en langage simple', 'Historique complet du portail'],
     whyTag: 'Pourquoi choisir Seals',
     whyTitle: 'Un service professionnel que vous pouvez comprendre et vérifier.',
     whyText: 'Chaque intervention tient compte de l’immeuble, du résident et de l’équipement. Vous savez toujours ce qui a été trouvé, autorisé et réalisé.',
@@ -455,6 +483,68 @@ export default function Landing() {
               </div>
               <a href="#contact" className="inline-flex items-center justify-center gap-2 rounded-full bg-navy px-6 py-3 text-sm font-extrabold text-white transition hover:-translate-y-0.5 hover:bg-brand-600">{t.request}<ArrowRight size={16} /></a>
             </div>
+          </div>
+        </section>
+
+        <section className="results-showcase overflow-hidden bg-[#edf4f7] py-20 md:py-28">
+          <div className="container-wide">
+            <div className="grid gap-8 lg:grid-cols-[.78fr_1.22fr] lg:items-end">
+              <div data-reveal="left">
+                <p className="kicker">{t.resultsTag}</p>
+                <h2 className="premium-title mt-5">{t.resultsTitle}</h2>
+              </div>
+              <p data-reveal="right" className="max-w-2xl text-base leading-8 text-slate-600 lg:ml-auto lg:text-lg">{t.resultsText}</p>
+            </div>
+
+            <div className="mt-12 grid gap-5 lg:grid-cols-[1.12fr_.88fr]">
+              <article data-reveal="left" className="media-panel group relative min-h-[430px] overflow-hidden rounded-[30px] bg-navy text-white md:min-h-[600px]">
+                <video
+                  className="absolute inset-0 h-full w-full object-cover"
+                  src="https://www.sealshvac.ca/video/V1.mp4"
+                  poster="/images/seals-service-proof-v2.webp"
+                  controls
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                />
+                <div className="pointer-events-none absolute inset-x-0 top-0 h-44 bg-gradient-to-b from-navy/85 to-transparent" />
+                <div className="pointer-events-none absolute left-5 top-5 flex items-center gap-3 rounded-full border border-white/20 bg-navy/70 px-4 py-2.5 backdrop-blur-md md:left-7 md:top-7">
+                  <CirclePlay size={20} className="text-cyan" />
+                  <span className="text-[10px] font-extrabold uppercase tracking-[.18em]">{t.videoLabel}</span>
+                </div>
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-navy via-navy/60 to-transparent p-6 pt-28 md:p-9 md:pt-36">
+                  <h3 className="max-w-2xl font-display text-2xl font-extrabold leading-tight md:text-4xl">{t.videoTitle}</h3>
+                </div>
+              </article>
+
+              <article data-reveal="right" className="media-panel group relative min-h-[430px] overflow-hidden rounded-[30px] bg-navy text-white md:min-h-[600px]">
+                <img src="/images/seals-service-proof-v2.webp" alt="Seals HVAC technician documenting a completed condominium service visit" className="h-full w-full object-cover object-center transition duration-1000 group-hover:scale-[1.035]" loading="lazy" decoding="async" />
+                <div className="absolute inset-0 bg-gradient-to-t from-navy via-navy/5 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-6 md:p-9">
+                  <span className="inline-flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[.18em] text-cyan"><Camera size={16} />{t.proofLabel}</span>
+                  <h3 className="mt-3 max-w-lg font-display text-2xl font-extrabold leading-tight md:text-3xl">{t.proofTitle}</h3>
+                </div>
+              </article>
+            </div>
+
+            <article data-reveal="scale" className="before-after-card mt-5 grid overflow-hidden rounded-[30px] bg-white shadow-[0_30px_80px_rgba(4,27,46,.12)] xl:grid-cols-[1.35fr_.65fr]">
+              <div className="before-after-visual relative min-h-[360px] overflow-hidden bg-slate-200 md:min-h-[540px]">
+                <img src="/images/seals-before-after-v2.webp" alt="Before and after professional fan coil maintenance" className="absolute inset-0 h-full w-full object-cover" loading="lazy" decoding="async" />
+                <div className="comparison-line absolute bottom-0 left-1/2 top-0 w-px bg-white/80 shadow-[0_0_18px_rgba(255,255,255,.9)]" aria-hidden="true"><span className="absolute left-1/2 top-1/2 grid h-11 w-11 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border-4 border-white bg-cyan text-xs font-black text-navy shadow-xl">↔</span></div>
+                <span className="absolute left-4 top-4 rounded-full bg-navy/85 px-4 py-2 text-[10px] font-extrabold uppercase tracking-wider text-white backdrop-blur md:left-7 md:top-7">{t.before}</span>
+                <span className="absolute right-4 top-4 rounded-full bg-cyan px-4 py-2 text-[10px] font-extrabold uppercase tracking-wider text-navy md:right-7 md:top-7">{t.after}</span>
+              </div>
+              <div className="flex flex-col justify-center p-7 md:p-12">
+                <p className="kicker">{t.caseTag}</p>
+                <h3 className="mt-5 font-display text-3xl font-extrabold leading-tight tracking-[-.04em] text-navy md:text-5xl">{t.caseTitle}</h3>
+                <p className="mt-5 text-sm leading-7 text-slate-600 md:text-base">{t.caseText}</p>
+                <div className="mt-8 space-y-3">
+                  {t.resultPoints.map((item) => <p key={item} className="flex items-center gap-3 border-b border-slate-200 pb-3 text-sm font-extrabold text-navy"><CheckCircle2 size={18} className="text-brand-600" />{item}</p>)}
+                </div>
+                <a href="#contact" className="mt-8 inline-flex w-fit items-center gap-2 rounded-full bg-navy px-6 py-3.5 text-sm font-extrabold text-white transition hover:-translate-y-0.5 hover:bg-brand-600">{t.request}<ArrowRight size={16} /></a>
+              </div>
+            </article>
           </div>
         </section>
 
