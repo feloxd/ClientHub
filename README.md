@@ -130,8 +130,13 @@ El cliente solo requiere `VITE_API_URL`, por ejemplo `https://api.tudominio.com/
 - `POST /api/auth/request-password-reset`, `/reset-password`
 - `POST /api/publico/contacto`
 - `GET /api/cliente/resumen`, `/reportes`, `/reportes/:id`, `/reportes/:id/pdf`, `/documentos`, `/notificaciones`
+- `GET|POST /api/cliente/solicitudes` crea y consulta solicitudes por edificio/unidad
+- `POST /api/cliente/cotizaciones/:quoteId/aprobar` registra la opción autorizada por el cliente
 - CRUD en `/api/admin/clientes`, `/reportes` y `/documentos`
+- Operaciones en `/api/admin/solicitudes`: estado, cotización con opciones, cita, técnico y pago presencial
 - `POST /api/admin/reportes/:id/publicar` publica y envía la notificación
+
+La ruta `/demo` conserva en el navegador una solicitud compartida entre las vistas Cliente, Operaciones y Técnico. Permite demostrar el recorrido completo sin alterar la base de datos; el portal autenticado puede consumir los endpoints operativos anteriores cuando se configure Railway.
 
 ## Consideraciones de producción
 

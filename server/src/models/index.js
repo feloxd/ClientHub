@@ -14,6 +14,11 @@ const RefreshToken = require('./refreshToken')(sequelize, DataTypes);
 const Invitation = require('./invitation')(sequelize, DataTypes);
 const PasswordReset = require('./passwordReset')(sequelize, DataTypes);
 const AuditLog = require('./auditLog')(sequelize, DataTypes);
+const ServiceRequest = require('./serviceRequest')(sequelize, DataTypes);
+const Quote = require('./quote')(sequelize, DataTypes);
+const QuoteOption = require('./quoteOption')(sequelize, DataTypes);
+const Appointment = require('./appointment')(sequelize, DataTypes);
+const Payment = require('./payment')(sequelize, DataTypes);
 
 User.hasMany(Report, { foreignKey: 'user_id', as: 'reports' });
 Report.belongsTo(User, { foreignKey: 'user_id', as: 'client' });
@@ -31,5 +36,15 @@ User.hasMany(PasswordReset, { foreignKey: 'user_id', as: 'passwordResets', onDel
 PasswordReset.belongsTo(User, { foreignKey: 'user_id' });
 User.hasMany(AuditLog, { foreignKey: 'admin_id', as: 'auditLogs', onDelete: 'SET NULL' });
 AuditLog.belongsTo(User, { foreignKey: 'admin_id', as: 'admin' });
+User.hasMany(ServiceRequest, { foreignKey: 'user_id', as: 'serviceRequests' });
+ServiceRequest.belongsTo(User, { foreignKey: 'user_id', as: 'client' });
+ServiceRequest.hasMany(Quote, { foreignKey: 'service_request_id', as: 'quotes', onDelete: 'CASCADE' });
+Quote.belongsTo(ServiceRequest, { foreignKey: 'service_request_id', as: 'request' });
+Quote.hasMany(QuoteOption, { foreignKey: 'quote_id', as: 'options', onDelete: 'CASCADE' });
+QuoteOption.belongsTo(Quote, { foreignKey: 'quote_id' });
+ServiceRequest.hasOne(Appointment, { foreignKey: 'service_request_id', as: 'appointment', onDelete: 'CASCADE' });
+Appointment.belongsTo(ServiceRequest, { foreignKey: 'service_request_id', as: 'request' });
+ServiceRequest.hasMany(Payment, { foreignKey: 'service_request_id', as: 'payments', onDelete: 'CASCADE' });
+Payment.belongsTo(ServiceRequest, { foreignKey: 'service_request_id', as: 'request' });
 
-module.exports = { sequelize, Sequelize, User, Report, ReportPhoto, Document, Notification, RefreshToken, Invitation, PasswordReset, AuditLog };
+module.exports = { sequelize, Sequelize, User, Report, ReportPhoto, Document, Notification, RefreshToken, Invitation, PasswordReset, AuditLog, ServiceRequest, Quote, QuoteOption, Appointment, Payment };

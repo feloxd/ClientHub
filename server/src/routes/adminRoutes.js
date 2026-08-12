@@ -2,7 +2,25 @@ const router = require('express').Router();
 const { body } = require('express-validator');
 const validate = require('../middleware/validate');
 const admin = require('../controllers/adminController');
+const workflow = require('../controllers/workflowController');
 const { photos, pdf } = require('../middleware/upload');
+
+router.get('/solicitudes', workflow.adminList);
+router.patch('/solicitudes/:id', [
+  body('estatus').optional().isIn(['recibida', 'diagnostico', 'cotizacion', 'autorizada', 'programada', 'en_proceso', 'completada', 'cancelada']),
+  body('tecnico').optional().trim().isLength({ min: 2, max: 120 })
+], validate, workflow.adminUpdate);
+router.post('/solicitudes/:id/cotizacion', [
+  body('mensaje').optional().trim().isLength({ max: 2000 }), body('opciones').isArray({ min: 1, max: 10 }),
+  body('opciones.*.titulo').trim().isLength({ min: 2, max: 180 }), body('opciones.*.descripcion').trim().isLength({ min: 2 }),
+  body('opciones.*.precio').isFloat({ min: 0 }), body('opciones.*.recomendada').optional().isBoolean()
+], validate, workflow.adminPublishQuote);
+router.post('/solicitudes/:id/cita', [
+  body('fecha_inicio').isISO8601(), body('tecnico').trim().isLength({ min: 2, max: 120 }), body('notas_acceso').optional().trim().isLength({ max: 2000 })
+], validate, workflow.adminSchedule);
+router.post('/solicitudes/:id/pago', [
+  body('monto').isFloat({ min: 0 }), body('metodo').isIn(['efectivo', 'tarjeta', 'transferencia', 'otro']), body('referencia').optional().trim().isLength({ max: 120 })
+], validate, workflow.adminPayment);
 
 const clientRules = [body('nombre').trim().isLength({ min: 2, max: 120 }), body('email').isEmail().normalizeEmail()];
 const reportRules = [
