@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { animate, spring, stagger } from 'animejs';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight,
@@ -210,6 +211,45 @@ export default function Landing() {
     };
   }, []);
 
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
+
+    const animations = [];
+    const heroWords = document.querySelectorAll('.anime-hero-word');
+    if (heroWords.length) {
+      animations.push(animate(heroWords, {
+        opacity: { from: 0 },
+        y: { from: '1.15em' },
+        rotateX: { from: -70 },
+        delay: stagger(68, { start: 180 }),
+        duration: 950,
+        ease: 'outExpo'
+      }));
+    }
+
+    const groups = [...document.querySelectorAll('[data-anime-stagger]')];
+    const groupObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const items = entry.target.querySelectorAll('[data-anime-item]');
+        animations.push(animate(items, {
+          opacity: [0, 1],
+          y: [36, 0],
+          scale: [.96, 1],
+          delay: stagger(105),
+          ease: spring({ bounce: .16, duration: 680 })
+        }));
+        groupObserver.unobserve(entry.target);
+      });
+    }, { rootMargin: '0px 0px -12% 0px', threshold: .14 });
+
+    groups.forEach((group) => groupObserver.observe(group));
+    return () => {
+      groupObserver.disconnect();
+      animations.forEach((animation) => animation.revert());
+    };
+  }, [lang]);
+
   const submit = async (event) => {
     event.preventDefault();
     setSending(true);
@@ -233,7 +273,7 @@ export default function Landing() {
           <Brand light compact />
           <nav className="hidden items-center gap-6 text-[11px] font-extrabold uppercase tracking-[.12em] text-white/80 xl:flex">
             {t.nav.map((label, index) => (
-              <a key={label} href={['#services', '#why', '#process', '#property', '#contact'][index]} className="transition hover:text-cyan">{label}</a>
+              <a key={label} href={['#services', '#why', '#process', '#property', '#contact'][index]} className="nav-link transition hover:text-cyan">{label}</a>
             ))}
           </nav>
           <div className="hidden items-center gap-3 md:flex">
@@ -276,7 +316,9 @@ export default function Landing() {
               <p className="hero-enter hero-enter-1 mb-5 flex items-center gap-3 text-[10px] font-extrabold uppercase tracking-[.22em] text-cyan md:text-xs">
                 <Snowflake size={17} /> {t.heroTag}
               </p>
-              <h1 className="hero-enter hero-enter-2 font-display text-[clamp(2.8rem,7vw,6.6rem)] font-extrabold leading-[.94] tracking-[-.06em]">{t.heroTitle}</h1>
+              <h1 className="anime-hero-title font-display text-[clamp(2.8rem,7vw,6.6rem)] font-extrabold leading-[.94] tracking-[-.06em]" aria-label={t.heroTitle}>
+                {t.heroTitle.split(' ').map((word, index) => <span aria-hidden="true" key={`${lang}-${word}-${index}`} className="anime-hero-word mr-[.22em] inline-block">{word}</span>)}
+              </h1>
               <p className="hero-enter hero-enter-3 mt-6 max-w-2xl text-[15px] leading-7 text-white/75 md:text-xl md:leading-9">{t.heroText}</p>
               <div className="hero-enter hero-enter-4 mt-8 flex flex-col gap-3 sm:flex-row">
                 <a href="#contact" className="cta-pulse inline-flex min-h-14 items-center justify-center gap-3 rounded-full bg-cyan px-7 text-sm font-extrabold text-navy shadow-[0_15px_40px_rgba(69,194,223,.25)] transition hover:-translate-y-0.5 hover:bg-white">
@@ -318,11 +360,11 @@ export default function Landing() {
               <h2 className="premium-title mt-5">{t.servicesTitle}</h2>
               <p className="mt-6 max-w-2xl text-base leading-8 text-slate-600">{t.servicesText}</p>
             </div>
-            <div className="mt-12 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <div data-anime-stagger className="mt-12 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
               {t.serviceItems.map(([title, text], index) => {
                 const Icon = serviceIcons[index];
                 return (
-                  <article key={title} data-reveal="up" style={{ '--reveal-delay': `${index * 110}ms` }} className="service-card group flex min-h-[310px] flex-col justify-between rounded-2xl border border-slate-200 bg-white p-7 shadow-[0_12px_45px_rgba(8,43,70,.06)] transition duration-500 hover:-translate-y-2 hover:border-brand-500 hover:bg-navy hover:text-white">
+                  <article key={title} data-anime-item className="service-card group flex min-h-[310px] flex-col justify-between rounded-2xl border border-slate-200 bg-white p-7 shadow-[0_12px_45px_rgba(8,43,70,.06)] transition duration-500 hover:-translate-y-2 hover:border-brand-500 hover:bg-navy hover:text-white">
                     <div className="flex items-start justify-between">
                       <span className="grid h-13 w-13 place-items-center rounded-xl bg-brand-50 p-3 text-brand-600 group-hover:bg-white/10 group-hover:text-cyan"><Icon size={25} /></span>
                       <span className="font-serif text-3xl italic text-slate-300 group-hover:text-cyan">0{index + 1}</span>
@@ -423,11 +465,11 @@ export default function Landing() {
               <h2 className="mt-5 font-display text-4xl font-extrabold leading-[1.02] tracking-[-.045em] md:text-6xl">{t.whyTitle}</h2>
               <p className="mt-6 max-w-xl text-base leading-8 text-white/60">{t.whyText}</p>
             </div>
-            <div className="grid gap-px overflow-hidden rounded-2xl bg-white/15 sm:grid-cols-2">
+            <div data-anime-stagger className="grid gap-px overflow-hidden rounded-2xl bg-white/15 sm:grid-cols-2">
               {t.whyItems.map(([title, text], index) => {
                 const Icon = whyIcons[index];
                 return (
-                  <article key={title} data-reveal="up" style={{ '--reveal-delay': `${index * 100}ms` }} className="why-card min-h-[240px] bg-[#0a2740] p-7 md:p-9">
+                  <article key={title} data-anime-item className="why-card min-h-[240px] bg-[#0a2740] p-7 md:p-9">
                     <Icon className="text-cyan" size={27} />
                     <h3 className="mt-10 font-display text-xl font-extrabold">{title}</h3>
                     <p className="mt-3 text-sm leading-6 text-white/55">{text}</p>
@@ -444,12 +486,12 @@ export default function Landing() {
               <p className="kicker justify-center">{t.processTag}</p>
               <h2 className="premium-title mx-auto mt-5 max-w-4xl">{t.processTitle}</h2>
             </div>
-            <div className="relative mt-14 grid gap-4 lg:grid-cols-4">
+            <div data-anime-stagger className="relative mt-14 grid gap-4 lg:grid-cols-4">
               <div data-reveal="line" className="process-line absolute left-[12%] right-[12%] top-10 hidden h-px origin-left bg-slate-300 lg:block" />
               {t.processItems.map(([number, title, text], index) => {
                 const Icon = processIcons[index];
                 return (
-                  <article key={title} data-reveal="up" style={{ '--reveal-delay': `${index * 130}ms` }} className="process-card relative rounded-2xl border border-slate-200 bg-white p-7">
+                  <article key={title} data-anime-item className="process-card relative rounded-2xl border border-slate-200 bg-white p-7">
                     <span className="relative z-10 grid h-14 w-14 place-items-center rounded-full bg-navy text-cyan shadow-[0_0_0_8px_#f2f6f9]"><Icon size={22} /></span>
                     <span className="mt-8 block text-[10px] font-extrabold uppercase tracking-[.2em] text-brand-600">{number}</span>
                     <h3 className="mt-2 font-display text-xl font-extrabold">{title}</h3>
