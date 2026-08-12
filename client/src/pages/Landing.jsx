@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { animate, spring, stagger } from 'animejs';
 import { Link } from 'react-router-dom';
 import {
@@ -18,6 +18,9 @@ import {
   Image as ImageIcon,
   Menu,
   MessageSquareText,
+  Pause,
+  PhoneCall,
+  Play,
   ShieldCheck,
   Snowflake,
   ThermometerSun,
@@ -34,6 +37,9 @@ const copy = {
     nav: ['Services', 'Why Seals', 'How it works', 'Property managers', 'Contact'],
     login: 'Client login',
     request: 'Request service',
+    call: 'Call 416-732-8025',
+    emergency: 'Need urgent HVAC help?',
+    learnMore: 'Explore service',
     heroTag: 'Condominium HVAC specialists · Toronto & GTA',
     heroTitle: 'Reliable HVAC service for every suite.',
     heroText: 'Repair, maintenance and installation for condominiums and residential buildings. Clear answers, professional technicians and documented results.',
@@ -99,6 +105,23 @@ const copy = {
     portalList: ['Requests by building and suite', 'Quote approvals', 'Appointments and technician progress', 'Payments, documents and service history'],
     portalDemo: 'Explore the interactive portal',
     portalLogin: 'Access client account',
+    trustSectionTag: 'Confidence before access',
+    trustSectionTitle: 'A professional process designed for occupied buildings.',
+    trustSectionText: 'Seals coordinates with property teams, explains work before approval and keeps service evidence available after every visit.',
+    trustCommitments: [
+      ['Clear scope', 'Diagnosis and available options are explained in plain language before work begins.'],
+      ['Documented visits', 'Service notes, photos and final reports stay organized by building and suite.'],
+      ['Controlled access', 'Only authorized accounts can view property records and service documents.']
+    ],
+    faqTag: 'Common questions',
+    faqTitle: 'What property teams want to know before booking.',
+    faqs: [
+      ['Can one account manage multiple suites?', 'Yes. A building account can create and follow requests for multiple units from one portal.'],
+      ['Will we approve the price before service?', 'When a repair requires authorization, the available options and totals are presented before the approved work begins.'],
+      ['Who schedules the appointment?', 'The Seals operations team coordinates the appointment and assigns the appropriate technician.'],
+      ['How is the completed work documented?', 'The visit can include before-and-after photos, technician notes, observations, payment status and a final report.'],
+      ['Where does Seals provide service?', 'The current service area focuses on Toronto, North York and the Greater Toronto Area.']
+    ],
     finalTag: 'Responsive condominium service',
     finalTitle: 'Your building’s comfort deserves a better process.',
     finalText: 'Start a service request and let Seals coordinate the diagnosis, approval, appointment and final documentation.',
@@ -119,6 +142,9 @@ const copy = {
     nav: ['Services', 'Pourquoi Seals', 'Fonctionnement', 'Gestionnaires', 'Contact'],
     login: 'Portail client',
     request: 'Demander un service',
+    call: 'Appeler le 416-732-8025',
+    emergency: 'Besoin d’aide CVCA rapidement?',
+    learnMore: 'Explorer le service',
     heroTag: 'Spécialistes CVCA en copropriété · Toronto et RGT',
     heroTitle: 'Un service CVCA fiable pour chaque unité.',
     heroText: 'Réparation, entretien et installation pour copropriétés et immeubles résidentiels. Des réponses claires, des techniciens professionnels et des résultats documentés.',
@@ -184,6 +210,23 @@ const copy = {
     portalList: ['Demandes par immeuble et unité', 'Approbation des devis', 'Rendez-vous et suivi du technicien', 'Paiements, documents et historique'],
     portalDemo: 'Explorer le portail interactif',
     portalLogin: 'Accéder au compte client',
+    trustSectionTag: 'Confiance avant l’accès',
+    trustSectionTitle: 'Un processus professionnel conçu pour les immeubles occupés.',
+    trustSectionText: 'Seals coordonne avec les gestionnaires, explique les travaux avant l’autorisation et conserve les preuves de chaque visite.',
+    trustCommitments: [
+      ['Portée claire', 'Le diagnostic et les options sont expliqués simplement avant le début des travaux.'],
+      ['Visites documentées', 'Les notes, photos et rapports sont organisés par immeuble et par unité.'],
+      ['Accès contrôlé', 'Seuls les comptes autorisés peuvent consulter les dossiers et documents de la propriété.']
+    ],
+    faqTag: 'Questions fréquentes',
+    faqTitle: 'Ce que les gestionnaires veulent savoir avant de réserver.',
+    faqs: [
+      ['Un compte peut-il gérer plusieurs unités?', 'Oui. Le compte de l’immeuble peut créer et suivre des demandes pour plusieurs unités.'],
+      ['Le prix est-il approuvé avant le service?', 'Lorsqu’une réparation exige une autorisation, les options et les totaux sont présentés avant les travaux approuvés.'],
+      ['Qui planifie le rendez-vous?', 'L’équipe des opérations Seals coordonne le rendez-vous et assigne le technicien approprié.'],
+      ['Comment les travaux sont-ils documentés?', 'La visite peut inclure des photos avant et après, des notes, des observations, le paiement et un rapport final.'],
+      ['Où Seals offre-t-elle ses services?', 'La zone actuelle couvre principalement Toronto, North York et la région du Grand Toronto.']
+    ],
     finalTag: 'Service réactif en copropriété',
     finalTitle: 'Le confort de votre immeuble mérite un meilleur processus.',
     finalText: 'Créez une demande et laissez Seals coordonner le diagnostic, l’autorisation, le rendez-vous et le rapport final.',
@@ -203,6 +246,7 @@ const copy = {
 };
 
 const serviceIcons = [Wrench, Wind, Gauge, ThermometerSun];
+const serviceSlugs = ['hvac-repair', 'fan-coil-maintenance', 'preventive-maintenance', 'air-conditioning'];
 const whyIcons = [MessageSquareText, ShieldCheck, ImageIcon, UserRoundCheck];
 const processIcons = [FileText, ClipboardCheck, CalendarCheck2, CheckCircle2];
 
@@ -219,9 +263,29 @@ function MotionHeading({ children, className = '' }) {
 export default function Landing() {
   const [menu, setMenu] = useState(false);
   const [lang, setLang] = useState('en');
+  const [heroPlaying, setHeroPlaying] = useState(true);
   const [sent, setSent] = useState('');
   const [sending, setSending] = useState(false);
+  const heroVideoRef = useRef(null);
   const t = copy[lang];
+
+  useEffect(() => {
+    document.title = 'Seals HVAC Services | Toronto Condominium HVAC';
+    const description = document.querySelector('meta[name="description"]');
+    if (description) description.setAttribute('content', 'Condominium HVAC repair, fan coil maintenance and installation across Toronto and the Greater Toronto Area.');
+  }, []);
+
+  const toggleHeroVideo = async () => {
+    const video = heroVideoRef.current;
+    if (!video) return;
+    if (video.paused) {
+      await video.play();
+      setHeroPlaying(true);
+    } else {
+      video.pause();
+      setHeroPlaying(false);
+    }
+  };
 
   useEffect(() => {
     const root = document.documentElement;
@@ -392,6 +456,7 @@ export default function Landing() {
             ))}
           </nav>
           <div className="hidden items-center gap-3 md:flex">
+            <a href="tel:+14167328025" className="inline-flex items-center gap-2 text-xs font-extrabold text-white transition hover:text-cyan"><PhoneCall size={15} />416-732-8025</a>
             <button type="button" onClick={() => setLang(lang === 'en' ? 'fr' : 'en')} className="rounded-full border border-white/30 px-4 py-3 text-xs font-extrabold text-white">
               {lang === 'en' ? 'FR' : 'EN'}
             </button>
@@ -412,6 +477,7 @@ export default function Landing() {
                 <button type="button" onClick={() => setLang(lang === 'en' ? 'fr' : 'en')} className="rounded-lg border border-white/25 py-3 text-xs font-bold">{lang === 'en' ? 'Français' : 'English'}</button>
                 <Link to="/login" className="rounded-lg bg-white py-3 text-center text-xs font-bold text-navy">{t.login}</Link>
               </div>
+              <a href="tel:+14167328025" className="mt-2 flex items-center justify-center gap-2 rounded-lg bg-cyan py-3 text-xs font-extrabold text-navy"><PhoneCall size={15} />{t.call}</a>
             </nav>
           </div>
         )}
@@ -419,7 +485,7 @@ export default function Landing() {
 
       <main>
         <section className="relative min-h-[720px] bg-[#041b2e] text-white md:min-h-[820px]">
-          <video className="hero-media absolute inset-0 h-full w-full object-cover" src="https://www.sealshvac.ca/video/V1.mp4" autoPlay muted loop playsInline preload="metadata" />
+          <video ref={heroVideoRef} className="hero-media absolute inset-0 h-full w-full object-cover" src="/media/seals-hvac-service-optimized.mp4" poster="/images/seals-service-proof-v2.webp" autoPlay muted loop playsInline preload="metadata" />
           <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(2,20,35,.96)_0%,rgba(2,20,35,.76)_48%,rgba(2,20,35,.25)_100%)]" />
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,.25),transparent_45%,rgba(2,20,35,.72))]" />
           <div className="hero-scan absolute inset-0" aria-hidden="true" />
@@ -442,6 +508,7 @@ export default function Landing() {
                 <a href="#services" className="inline-flex min-h-14 items-center justify-center gap-3 rounded-full border border-white/35 bg-white/5 px-7 text-sm font-extrabold text-white backdrop-blur transition hover:bg-white/15">
                   {t.heroSecondary} <ChevronRight size={18} />
                 </a>
+                <a href="tel:+14167328025" className="inline-flex min-h-14 items-center justify-center gap-3 rounded-full border border-cyan/40 bg-cyan/10 px-7 text-sm font-extrabold text-cyan backdrop-blur transition hover:bg-cyan hover:text-navy"><PhoneCall size={17} />{t.call}</a>
               </div>
               <div className="hero-enter hero-enter-5 mt-10 grid max-w-2xl gap-3 border-t border-white/20 pt-6 sm:grid-cols-3">
                 {t.trust.map((item, index) => <span key={item} className="trust-item flex items-center gap-2 text-xs font-bold text-white/75" style={{ '--item-delay': `${1.1 + index * .15}s` }}><Check size={15} className="text-cyan" />{item}</span>)}
@@ -451,6 +518,7 @@ export default function Landing() {
           <div className="location-ribbon absolute bottom-0 right-0 hidden bg-cyan px-8 py-5 text-xs font-extrabold uppercase tracking-[.14em] text-navy lg:block">
             Toronto · North York · GTA
           </div>
+          <button type="button" onClick={toggleHeroVideo} className="absolute bottom-7 left-5 z-10 grid h-11 w-11 place-items-center rounded-full border border-white/25 bg-navy/55 text-white backdrop-blur transition hover:border-cyan hover:text-cyan md:left-auto md:right-8" aria-label={heroPlaying ? 'Pause background video' : 'Play background video'}>{heroPlaying ? <Pause size={17} /> : <Play size={17} />}</button>
         </section>
 
         <section className="bg-[#f3f7fa] py-20 md:py-28">
@@ -487,7 +555,7 @@ export default function Landing() {
                     <div>
                       <h3 className="font-display text-xl font-extrabold">{title}</h3>
                       <p className="mt-3 text-sm leading-6 text-slate-500 group-hover:text-white/65">{text}</p>
-                      <a href="#contact" className="mt-5 inline-flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-brand-600 group-hover:text-cyan">{t.request}<ArrowRight size={14} /></a>
+                      <Link to={`/services/${serviceSlugs[index]}`} className="mt-5 inline-flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-brand-600 group-hover:text-cyan">{t.learnMore}<ArrowRight size={14} /></Link>
                     </div>
                   </article>
                 );
@@ -590,7 +658,7 @@ export default function Landing() {
               <article data-reveal="left" className="media-panel group relative min-h-[430px] overflow-hidden rounded-[30px] bg-navy text-white md:min-h-[600px]">
                 <video
                   className="absolute inset-0 h-full w-full object-cover"
-                  src="https://www.sealshvac.ca/video/V1.mp4"
+                  src="/media/seals-hvac-service-optimized.mp4"
                   poster="/images/seals-service-proof-v2.webp"
                   controls
                   muted
@@ -720,6 +788,30 @@ export default function Landing() {
           </div>
         </section>
 
+        <section className="bg-[#f4f8fa] py-20 md:py-28">
+          <div className="container-wide">
+            <div className="grid gap-10 lg:grid-cols-[.82fr_1.18fr] lg:items-end">
+              <div data-reveal="left">
+                <p className="kicker">{t.trustSectionTag}</p>
+                <MotionHeading className="mt-5 font-display text-4xl font-extrabold leading-[1.02] tracking-[-.045em] text-navy md:text-6xl">{t.trustSectionTitle}</MotionHeading>
+              </div>
+              <p data-reveal="right" className="max-w-2xl text-base leading-8 text-slate-600 lg:ml-auto lg:text-lg">{t.trustSectionText}</p>
+            </div>
+            <div data-anime-stagger className="mt-12 grid gap-4 md:grid-cols-3">
+              {t.trustCommitments.map(([title, text], index) => {
+                const Icon = [ClipboardCheck, FileText, ShieldCheck][index];
+                return <article data-anime-item key={title} className="rounded-[24px] border border-slate-200 bg-white p-7 shadow-[0_18px_55px_rgba(7,37,61,.06)]"><span className="grid h-12 w-12 place-items-center rounded-2xl bg-brand-50 text-brand-600"><Icon size={22} /></span><h3 className="mt-7 font-display text-xl font-extrabold text-navy">{title}</h3><p className="mt-3 text-sm leading-7 text-slate-500">{text}</p></article>;
+              })}
+            </div>
+            <div className="mt-16 grid gap-10 lg:grid-cols-[.65fr_1.35fr]">
+              <div data-reveal="left"><p className="kicker">{t.faqTag}</p><MotionHeading className="mt-5 font-display text-3xl font-extrabold leading-tight tracking-[-.04em] text-navy md:text-5xl">{t.faqTitle}</MotionHeading><a href="tel:+14167328025" className="mt-7 inline-flex items-center gap-2 rounded-full bg-navy px-6 py-3.5 text-sm font-extrabold text-white"><PhoneCall size={16} />{t.call}</a></div>
+              <div data-reveal="right" className="divide-y divide-slate-200 border-y border-slate-200">
+                {t.faqs.map(([question, answer], index) => <details key={question} className="faq-item group py-5" open={index === 0}><summary className="flex cursor-pointer list-none items-center justify-between gap-5 font-display text-lg font-extrabold text-navy"><span>{question}</span><span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-white text-brand-600 transition group-open:rotate-45">+</span></summary><p className="max-w-3xl pb-1 pt-4 text-sm leading-7 text-slate-600">{answer}</p></details>)}
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section className="relative overflow-hidden bg-cyan py-16 text-navy md:py-20">
           <Snowflake className="snowflake-drift absolute -right-16 -top-24 h-80 w-80 text-white/20" strokeWidth={1} />
           <div data-reveal="up" className="container-site relative flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-center">
@@ -735,6 +827,7 @@ export default function Landing() {
               <MotionHeading className="mt-5 font-display text-4xl font-extrabold leading-[1.02] tracking-[-.045em] md:text-6xl">{t.contactTitle}</MotionHeading>
               <p className="mt-6 max-w-md text-base leading-8 text-white/60">{t.contactText}</p>
               <div className="mt-9 space-y-4 text-sm font-bold text-white/75">
+                <a href="tel:+14167328025" className="flex items-center gap-3 text-cyan transition hover:text-white"><PhoneCall size={19} />416-732-8025</a>
                 <p className="flex items-center gap-3"><Clock3 size={19} className="text-cyan" /> Toronto & Greater Toronto Area</p>
                 <p className="flex items-center gap-3"><ShieldCheck size={19} className="text-cyan" /> Authorized client portal available</p>
               </div>
@@ -759,15 +852,16 @@ export default function Landing() {
         <div className="container-wide flex flex-col justify-between gap-8 border-b border-white/10 pb-9 md:flex-row">
           <div><Brand light /><p className="mt-5 max-w-md text-sm leading-6 text-white/45">{t.footer}</p></div>
           <div className="grid grid-cols-2 gap-12 text-sm text-white/55">
-            <div className="space-y-3"><b className="block text-[10px] uppercase tracking-widest text-cyan">Services</b><a href="#services" className="block hover:text-white">HVAC service</a><a href="#property" className="block hover:text-white">Property managers</a></div>
-            <div className="space-y-3"><b className="block text-[10px] uppercase tracking-widest text-cyan">Access</b><Link to="/login" className="block hover:text-white">{t.login}</Link><Link to="/demo" className="block hover:text-white">Portal demo</Link></div>
+            <div className="space-y-3"><b className="block text-[10px] uppercase tracking-widest text-cyan">Services</b><Link to="/services/hvac-repair" className="block hover:text-white">HVAC repair</Link><Link to="/services/fan-coil-maintenance" className="block hover:text-white">Fan coils</Link><Link to="/services/preventive-maintenance" className="block hover:text-white">Maintenance</Link></div>
+            <div className="space-y-3"><b className="block text-[10px] uppercase tracking-widest text-cyan">Access</b><Link to="/login" className="block hover:text-white">{t.login}</Link><Link to="/demo" className="block hover:text-white">Portal demo</Link><Link to="/privacy" className="block hover:text-white">Privacy</Link><Link to="/terms" className="block hover:text-white">Terms</Link></div>
           </div>
         </div>
         <div className="container-wide flex flex-col justify-between gap-2 pt-6 text-[11px] text-white/35 sm:flex-row"><p>{t.copyright}</p><p>Toronto, Ontario · Canada</p></div>
       </footer>
 
-      <div className="fixed inset-x-0 bottom-0 z-50 grid grid-cols-[1fr_auto] gap-2 border-t border-slate-200 bg-white p-3 shadow-[0_-10px_30px_rgba(4,23,37,.12)] md:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-50 grid grid-cols-[1fr_auto_auto] gap-2 border-t border-slate-200 bg-white p-3 shadow-[0_-10px_30px_rgba(4,23,37,.12)] md:hidden">
         <a href="#contact" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-brand-600 px-5 text-sm font-extrabold text-white">{t.sticky}<ArrowRight size={16} /></a>
+        <a href="tel:+14167328025" className="grid min-h-12 min-w-12 place-items-center rounded-full bg-cyan text-navy" aria-label={t.call}><PhoneCall size={19} /></a>
         <Link to="/login" className="grid min-h-12 min-w-12 place-items-center rounded-full border border-slate-200 text-navy" aria-label={t.login}><Building2 size={19} /></Link>
       </div>
     </div>

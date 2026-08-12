@@ -250,7 +250,8 @@ function Pipeline({ t }) {
 function RequestModal({ t, onClose, onDone }) {
   const submit = (event) => {
     event.preventDefault();
-    onDone();
+    const form = new FormData(event.currentTarget);
+    onDone({ suite: form.get('suite'), title: form.get('issue'), priority: form.get('priority') });
   };
   return <div className="fixed inset-0 z-[100] grid place-items-center overflow-y-auto bg-[#03101e]/70 p-4 backdrop-blur-sm">
     <form onSubmit={submit} className="my-8 w-full max-w-2xl overflow-hidden rounded-[24px] bg-white shadow-2xl">
@@ -260,9 +261,9 @@ function RequestModal({ t, onClose, onDone }) {
       </header>
       <div className="grid gap-5 p-6 sm:grid-cols-2 sm:p-8">
         <label><span className="label">{t.property}</span><select className="input"><option>Residencias ELORA</option></select></label>
-        <label><span className="label">{t.suite}</span><input className="input" defaultValue="Suite 1102" required/></label>
-        <label className="sm:col-span-2"><span className="label">{t.issue}</span><textarea className="input min-h-28 resize-none" placeholder="The air conditioner is running but the suite is still warm..." required/></label>
-        <label><span className="label">{t.priority}</span><select className="input"><option>{t.normal}</option><option>{t.urgent}</option></select></label>
+        <label><span className="label">{t.suite}</span><input name="suite" className="input" defaultValue="Suite 1102" required/></label>
+        <label className="sm:col-span-2"><span className="label">{t.issue}</span><textarea name="issue" className="input min-h-28 resize-none" placeholder="The air conditioner is running but the suite is still warm..." required/></label>
+        <label><span className="label">{t.priority}</span><select name="priority" className="input"><option>{t.normal}</option><option>{t.urgent}</option></select></label>
         <label><span className="label">{t.attach}</span><span className="flex h-[46px] cursor-pointer items-center gap-2 rounded-lg border border-dashed border-brand-500 px-4 text-sm font-bold text-brand-600"><ImagePlus size={17}/> JPG, PNG</span></label>
       </div>
       <footer className="flex justify-end gap-3 bg-slate-50 px-6 py-5 sm:px-8"><button type="button" onClick={onClose} className="btn-secondary">Cancel</button><button className="btn-primary"><Send size={16}/>{t.submit}</button></footer>
@@ -270,7 +271,7 @@ function RequestModal({ t, onClose, onDone }) {
   </div>;
 }
 
-function ClientView({ t, selectedQuote, setSelectedQuote, setToast, setRequestOpen }) {
+function ClientView({ t, selectedQuote, setSelectedQuote, setToast, setRequestOpen, advanceWorkflow }) {
   const options = [
     { id: 1, title: 'Standard valve replacement', text: 'OEM-compatible valve, installation and system test.', price: '$385', warranty: '1-year parts warranty' },
     { id: 2, title: 'Premium OEM replacement', text: 'Manufacturer OEM valve, installation and full performance test.', price: '$495', warranty: '2-year parts warranty' },
@@ -278,6 +279,7 @@ function ClientView({ t, selectedQuote, setSelectedQuote, setToast, setRequestOp
   ];
   const approve = () => {
     if (!selectedQuote) return;
+    advanceWorkflow('Approved', { quote: selectedQuote });
     setToast(t.approved);
   };
   return <div className="space-y-7">
@@ -315,7 +317,7 @@ function ClientView({ t, selectedQuote, setSelectedQuote, setToast, setRequestOp
   </div>;
 }
 
-function AdminView({ t, setToast }) {
+function AdminView({ t, setToast, advanceWorkflow }) {
   const [options, setOptions] = useState(2);
   return <div className="space-y-7">
     <header className="flex flex-col justify-between gap-4 md:flex-row md:items-end"><div><p className="text-xs font-extrabold uppercase tracking-[.2em] text-violet-600">Seals command centre</p><h1 className="mt-2 font-display text-3xl font-extrabold tracking-tight text-navy md:text-4xl">{t.queue}</h1><p className="mt-2 text-sm text-slate-500">{t.queueText}</p></div><button onClick={() => setToast('New request created')} className="btn-primary rounded-full"><Plus size={17}/>{t.newRequest}</button></header>
@@ -343,21 +345,21 @@ function AdminView({ t, setToast }) {
             <div className="mt-4 space-y-2">{Array.from({ length: options }).map((_, index) => <div key={index} className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2.5 text-xs"><span><b>Option {index + 1}</b> · {index === 0 ? 'Standard replacement' : index === 1 ? 'OEM replacement' : 'Custom alternative'}</span><b className="text-navy">${index === 0 ? '385' : index === 1 ? '495' : 575 + index * 40}</b></div>)}</div>
           </div>
           <p className="flex gap-2 text-[11px] leading-5 text-slate-400"><ShieldCheck className="mt-0.5 shrink-0" size={15}/>{t.operationsNote}</p>
-          <div className="grid gap-2 sm:grid-cols-2"><button onClick={() => setToast('Quote published and client notified')} className="btn-primary"><Send size={16}/>{t.publish}</button><button onClick={() => setToast('Technician assignment opened')} className="btn-secondary"><UserRoundCheck size={16}/>{t.assign}</button></div>
+          <div className="grid gap-2 sm:grid-cols-2"><button onClick={() => { advanceWorkflow('Quote published'); setToast('Quote published and client notified'); }} className="btn-primary"><Send size={16}/>{t.publish}</button><button onClick={() => { advanceWorkflow('Assigned', { technician: 'Oscar M.' }); setToast('Oscar M. assigned and notified'); }} className="btn-secondary"><UserRoundCheck size={16}/>{t.assign}</button></div>
         </div>
       </section>
     </div>
   </div>;
 }
 
-function TechnicianView({ t, setToast }) {
+function TechnicianView({ t, setToast, workflow, advanceWorkflow }) {
   const [started, setStarted] = useState(false);
   const [payment, setPayment] = useState(false);
   return <div className="mx-auto max-w-6xl space-y-7">
     <header className="flex flex-col justify-between gap-4 md:flex-row md:items-end"><div><p className="text-xs font-extrabold uppercase tracking-[.2em] text-[#d56818]">{t.technicianToday} · Oscar M.</p><h1 className="mt-2 font-display text-3xl font-extrabold tracking-tight text-navy md:text-4xl">{started ? t.progress : t.nextJob}</h1><p className="mt-2 text-sm text-slate-500">2 of 5 jobs completed · Route on time</p></div><Pill tone="green">Online · GPS active</Pill></header>
     <div className="grid gap-6 lg:grid-cols-[.68fr_1.32fr]">
       <aside className="space-y-4">
-        <section className="overflow-hidden rounded-[24px] bg-[#071a2e] text-white shadow-card"><div className="p-6"><div className="flex items-center justify-between"><Pill tone="amber">{started ? t.progress : '3:30 PM'}</Pill><span className="text-xs text-white/45">#WO-1053</span></div><h2 className="mt-5 font-display text-2xl font-extrabold">{t.noCooling}</h2><p className="mt-2 text-sm text-white/55">{t.unit} · {t.building}</p><div className="mt-6 space-y-3 border-t border-white/10 pt-5 text-xs text-white/65"><p className="flex items-center gap-3"><MapPin size={16} className="text-cyan"/>88 Harbour St, Toronto</p><p className="flex items-center gap-3"><Home size={16} className="text-cyan"/>{t.access}: Concierge has key</p><p className="flex items-center gap-3"><Clock3 size={16} className="text-cyan"/>Estimated: 75 minutes</p></div></div><button onClick={() => { setStarted(true); setToast('Job timer started'); }} className="flex w-full items-center justify-center gap-2 bg-cyan py-4 text-sm font-extrabold text-navy">{started ? <><CheckCircle2 size={17}/>Job started</> : <><ArrowRight size={17}/>{t.startJob}</>}</button></section>
+        <section className="overflow-hidden rounded-[24px] bg-[#071a2e] text-white shadow-card"><div className="p-6"><div className="flex items-center justify-between"><Pill tone="amber">{started ? t.progress : '3:30 PM'}</Pill><span className="text-xs text-white/45">#{workflow.id.replace('SHV','WO')}</span></div><h2 className="mt-5 font-display text-2xl font-extrabold">{workflow.title}</h2><p className="mt-2 text-sm text-white/55">{workflow.suite} · {t.building}</p><div className="mt-6 space-y-3 border-t border-white/10 pt-5 text-xs text-white/65"><p className="flex items-center gap-3"><MapPin size={16} className="text-cyan"/>88 Harbour St, Toronto</p><p className="flex items-center gap-3"><Home size={16} className="text-cyan"/>{t.access}: Concierge has key</p><p className="flex items-center gap-3"><Clock3 size={16} className="text-cyan"/>Estimated: 75 minutes</p></div></div><button onClick={() => { setStarted(true); advanceWorkflow('In progress'); setToast('Job timer started and operations notified'); }} className="flex w-full items-center justify-center gap-2 bg-cyan py-4 text-sm font-extrabold text-navy">{started ? <><CheckCircle2 size={17}/>Job started</> : <><ArrowRight size={17}/>{t.startJob}</>}</button></section>
         <section className="rounded-[20px] border border-amber-200 bg-amber-50 p-5"><div className="flex gap-3"><AlertTriangle className="shrink-0 text-amber-600" size={20}/><div><h3 className="font-display text-sm font-extrabold text-amber-900">{t.changeOrder}</h3><p className="mt-2 text-xs leading-5 text-amber-800/70">{t.changeHelp}</p><button onClick={() => setToast('Change-order request opened')} className="mt-4 text-xs font-extrabold text-amber-800">Create request <ArrowRight className="ml-1 inline" size={13}/></button></div></div></section>
       </aside>
       <main className="space-y-5">
@@ -368,10 +370,10 @@ function TechnicianView({ t, setToast }) {
         <section className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-card"><div className="flex items-center justify-between"><div><p className="label">Required documentation</p><h2 className="font-display text-xl font-extrabold text-navy">Photo evidence</h2></div><Camera className="text-brand-600"/></div>
           <div className="mt-5 grid gap-4 sm:grid-cols-2">{[t.before, t.after].map((label, index) => <button key={label} onClick={() => setToast(`${label} added`)} className={`grid min-h-36 place-items-center rounded-2xl border-2 border-dashed p-5 text-center ${index === 0 ? 'border-emerald-200 bg-emerald-50/50' : 'border-brand-200 bg-brand-50/50'}`}><span><span className={`mx-auto grid h-10 w-10 place-items-center rounded-full ${index === 0 ? 'bg-emerald-100 text-emerald-600' : 'bg-brand-100 text-brand-600'}`}>{index === 0 ? <Check size={19}/> : <Camera size={19}/>}</span><b className="mt-3 block text-sm text-navy">{label}</b><small className="mt-1 block text-slate-500">{index === 0 ? '2 photos uploaded' : t.addEvidence}</small></span></button>)}</div>
         </section>
-        <section className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-card"><div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center"><div><p className="label">{t.collect}</p><h2 className="font-display text-xl font-extrabold text-navy">{payment ? t.paymentRecorded : '$495.00 + HST · $559.35 CAD'}</h2></div>{payment ? <Pill tone="green">Paid · Credit card</Pill> : <button onClick={() => setPayment(true)} className="btn-primary"><CreditCard size={16}/>{t.record}</button>}</div>
+        <section className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-card"><div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center"><div><p className="label">{t.collect}</p><h2 className="font-display text-xl font-extrabold text-navy">{payment ? t.paymentRecorded : '$495.00 + HST · $559.35 CAD'}</h2></div>{payment ? <Pill tone="green">Paid · Credit card</Pill> : <button onClick={() => { setPayment(true); advanceWorkflow(workflow.stage, { paid: true }); }} className="btn-primary"><CreditCard size={16}/>{t.record}</button>}</div>
           {payment && <div className="mt-5 grid gap-3 border-t border-slate-100 pt-5 sm:grid-cols-3">{[[t.method,'Credit card'],[t.reference,'TX-773091'],[t.receipt,'Attached']].map(([label,value]) => <div key={label}><p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">{label}</p><b className="mt-1 block text-sm text-navy">{value}</b></div>)}</div>}
         </section>
-        <button onClick={() => setToast('Service completed. Final report sent to operations.')} className="flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-600 py-4 text-sm font-extrabold text-white shadow-lg shadow-emerald-100"><CheckCircle2 size={18}/>{t.finish}</button>
+        <button onClick={() => { advanceWorkflow('Completed', { paid: payment, evidence: 4 }); setToast('Service completed. Final report sent to client and operations.'); }} className="flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-600 py-4 text-sm font-extrabold text-white shadow-lg shadow-emerald-100"><CheckCircle2 size={18}/>{t.finish}</button>
       </main>
     </div>
   </div>;
@@ -386,6 +388,13 @@ const requestRows = [
 
 function DemoHeading({ eyebrow, title, text, action }) {
   return <header className="flex flex-col justify-between gap-4 md:flex-row md:items-end"><div><p className="text-xs font-extrabold uppercase tracking-[.2em] text-brand-600">{eyebrow}</p><h1 className="mt-2 font-display text-3xl font-extrabold tracking-tight text-navy md:text-4xl">{title}</h1><p className="mt-2 text-sm text-slate-500">{text}</p></div>{action}</header>;
+}
+
+const workflowStages = ['Requested', 'Quote published', 'Approved', 'Assigned', 'In progress', 'Completed'];
+
+function WorkflowStrip({ workflow }) {
+  const current = workflowStages.indexOf(workflow.stage);
+  return <section className="mb-7 overflow-hidden rounded-2xl border border-brand-100 bg-white shadow-card"><div className="flex flex-col gap-3 border-b border-brand-100 bg-brand-50 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"><div><p className="text-[9px] font-black uppercase tracking-[.18em] text-brand-600">Live cross-role demo · {workflow.id}</p><b className="mt-1 block text-sm text-navy">{workflow.suite} · {workflow.title}</b></div><Pill tone={workflow.stage === 'Completed' ? 'green' : 'blue'}>{workflow.stage}</Pill></div><div className="overflow-x-auto p-5"><div className="flex min-w-[650px]">{workflowStages.map((stage,index)=><div key={stage} className="relative flex flex-1 flex-col items-center text-center">{index < workflowStages.length - 1 && <span className={`absolute left-1/2 top-3 h-0.5 w-full ${index < current ? 'bg-brand-600' : 'bg-slate-200'}`}/>}<span className={`relative z-10 grid h-6 w-6 place-items-center rounded-full text-[9px] font-black ${index <= current ? 'bg-brand-600 text-white' : 'bg-slate-100 text-slate-400'}`}>{index < current ? <Check size={12}/> : index+1}</span><small className={`mt-2 text-[9px] font-bold ${index <= current ? 'text-navy' : 'text-slate-400'}`}>{stage}</small></div>)}</div></div></section>;
 }
 
 function ClientSection({ page, t, setToast, setRequestOpen, selectedQuote, setSelectedQuote }) {
@@ -460,6 +469,10 @@ export default function Demo() {
   const [requestOpen, setRequestOpen] = useState(false);
   const [selectedQuote, setSelectedQuote] = useState(2);
   const [toast, setToast] = useState('');
+  const [workflow, setWorkflow] = useState(() => {
+    const fallback = { id: 'SHV-1053', suite: 'Suite 530', title: 'No cooling in living room', priority: 'Urgent', stage: 'Quote published', quote: null, technician: null, paid: false, evidence: 0 };
+    try { return JSON.parse(localStorage.getItem('seals-demo-workflow')) || fallback; } catch { return fallback; }
+  });
   const t = copy[lang];
   const meta = roleMeta[role];
   const RoleIcon = meta.icon;
@@ -471,6 +484,20 @@ export default function Demo() {
   const flash = (message) => {
     setToast(message);
     window.setTimeout(() => setToast(''), 2600);
+  };
+  const advanceWorkflow = (stage, changes = {}) => {
+    setWorkflow((current) => {
+      const next = { ...current, ...changes, stage, updatedAt: new Date().toISOString() };
+      localStorage.setItem('seals-demo-workflow', JSON.stringify(next));
+      return next;
+    });
+  };
+  const createWorkflow = (request) => {
+    const next = { id: `SHV-${1054 + Math.floor(Math.random() * 40)}`, suite: request.suite, title: request.title, priority: request.priority, stage: 'Requested', quote: null, technician: null, paid: false, evidence: 0, updatedAt: new Date().toISOString() };
+    localStorage.setItem('seals-demo-workflow', JSON.stringify(next));
+    setWorkflow(next);
+    setRequestOpen(false);
+    flash(`${next.id} created. Switch to Operations to review it.`);
   };
   const exit = async () => {
     await logout();
@@ -495,13 +522,14 @@ export default function Demo() {
         </div>
       </header>
       <main className="p-4 md:p-7 xl:p-9">
-        {role === 'client' && (activePage === 'dashboard' ? <ClientView t={t} selectedQuote={selectedQuote} setSelectedQuote={setSelectedQuote} setToast={flash} setRequestOpen={setRequestOpen}/> : <ClientSection page={activePage} t={t} selectedQuote={selectedQuote} setSelectedQuote={setSelectedQuote} setToast={flash} setRequestOpen={setRequestOpen}/>)}
-        {role === 'admin' && (activePage === 'dashboard' ? <AdminView t={t} setToast={flash}/> : <TeamSection role={role} page={activePage} t={t} setToast={flash}/>)}
-        {role === 'tech' && (activePage === 'dashboard' || activePage === 'workorders' ? <TechnicianView t={t} setToast={flash}/> : <TeamSection role={role} page={activePage} t={t} setToast={flash}/>)}
+        <WorkflowStrip workflow={workflow}/>
+        {role === 'client' && (activePage === 'dashboard' ? <ClientView t={t} selectedQuote={selectedQuote} setSelectedQuote={setSelectedQuote} setToast={flash} setRequestOpen={setRequestOpen} advanceWorkflow={advanceWorkflow}/> : <ClientSection page={activePage} t={t} selectedQuote={selectedQuote} setSelectedQuote={setSelectedQuote} setToast={flash} setRequestOpen={setRequestOpen}/>)}
+        {role === 'admin' && (activePage === 'dashboard' ? <AdminView t={t} setToast={flash} advanceWorkflow={advanceWorkflow}/> : <TeamSection role={role} page={activePage} t={t} setToast={flash}/>)}
+        {role === 'tech' && (activePage === 'dashboard' || activePage === 'workorders' ? <TechnicianView t={t} setToast={flash} workflow={workflow} advanceWorkflow={advanceWorkflow}/> : <TeamSection role={role} page={activePage} t={t} setToast={flash}/>)}
         <p className="mt-8 text-center text-[10px] font-bold uppercase tracking-widest text-slate-300">{t.allCaught}</p>
       </main>
     </div>
-    {requestOpen && <RequestModal t={t} onClose={() => setRequestOpen(false)} onDone={() => { setRequestOpen(false); flash(t.sent); }}/>}
+    {requestOpen && <RequestModal t={t} onClose={() => setRequestOpen(false)} onDone={createWorkflow}/>}
     {toast && <div className="fixed bottom-5 right-5 z-[120] flex max-w-sm items-center gap-3 rounded-2xl bg-[#071a2e] px-5 py-4 text-sm font-bold text-white shadow-2xl"><span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-cyan text-navy"><Check size={15}/></span>{toast}</div>}
   </div>;
 }
