@@ -52,6 +52,14 @@ const copy = {
     ],
     quote: 'Need help with an HVAC problem?',
     quoteText: 'Tell us what is happening in everyday words. We will guide you through the next step.',
+    teamTag: 'The people behind the service',
+    teamTitle: 'Professional in every suite. Clear at every step.',
+    teamText: 'Our uniform represents more than a brand. It identifies a team trained to work carefully inside occupied condominiums, communicate with property managers and leave every visit documented.',
+    teamCards: [
+      ['Technical precision', 'Two-person service when the job requires coordinated diagnosis.'],
+      ['Clear communication', 'Straightforward updates for building and property management teams.'],
+      ['Respect for every home', 'Organized work areas, protective care and complete evidence.']
+    ],
     whyTag: 'Why choose Seals',
     whyTitle: 'Professional service you can understand and verify.',
     whyText: 'Every service call is handled with the building, the resident and the equipment in mind. You always know what was found, what was approved and what was completed.',
@@ -116,6 +124,14 @@ const copy = {
     ],
     quote: 'Un problème de chauffage ou climatisation?',
     quoteText: 'Décrivez-nous la situation avec vos propres mots. Nous vous guiderons vers la prochaine étape.',
+    teamTag: 'Les personnes derrière le service',
+    teamTitle: 'Professionnels dans chaque unité. Clairs à chaque étape.',
+    teamText: 'Notre uniforme représente plus qu’une marque. Il identifie une équipe formée pour travailler avec soin dans les copropriétés occupées, communiquer avec les gestionnaires et documenter chaque visite.',
+    teamCards: [
+      ['Précision technique', 'Un service à deux techniciens lorsque le diagnostic exige une coordination.'],
+      ['Communication claire', 'Des mises à jour simples pour les gestionnaires d’immeubles.'],
+      ['Respect de chaque domicile', 'Espace protégé, travail organisé et preuves complètes.']
+    ],
     whyTag: 'Pourquoi choisir Seals',
     whyTitle: 'Un service professionnel que vous pouvez comprendre et vérifier.',
     whyText: 'Chaque intervention tient compte de l’immeuble, du résident et de l’équipement. Vous savez toujours ce qui a été trouvé, autorisé et réalisé.',
@@ -323,6 +339,79 @@ export default function Landing() {
             <div data-reveal="scale" className="quote-banner mt-8 flex flex-col items-start justify-between gap-5 overflow-hidden rounded-2xl bg-cyan px-6 py-7 text-navy md:flex-row md:items-center md:px-9">
               <div><h3 className="font-display text-xl font-extrabold md:text-2xl">{t.quote}</h3><p className="mt-2 max-w-2xl text-sm leading-6 text-navy/70">{t.quoteText}</p></div>
               <a href="#contact" className="inline-flex shrink-0 items-center gap-2 rounded-full bg-navy px-6 py-3.5 text-sm font-extrabold text-white">{t.request}<ArrowRight size={16} /></a>
+            </div>
+          </div>
+        </section>
+
+        <section className="overflow-hidden bg-white pb-20 md:pb-28">
+          <div className="container-wide">
+            <div className="grid gap-10 border-t border-slate-200 pt-20 lg:grid-cols-[.8fr_1.2fr] lg:items-end">
+              <div data-reveal="left">
+                <p className="kicker">{t.teamTag}</p>
+                <h2 className="mt-5 font-display text-4xl font-extrabold leading-[1.02] tracking-[-.045em] text-navy md:text-6xl">{t.teamTitle}</h2>
+              </div>
+              <p data-reveal="right" className="max-w-2xl text-base leading-8 text-slate-600 lg:ml-auto lg:text-lg">{t.teamText}</p>
+            </div>
+
+            <div className="team-gallery mt-12 grid gap-4 lg:grid-cols-[1.25fr_.75fr] lg:grid-rows-2">
+              <figure data-reveal="scale" className="team-photo group relative min-h-[430px] overflow-hidden rounded-[28px] bg-navy lg:row-span-2 lg:min-h-[680px]">
+                <img
+                  src="/images/seals-team-service.webp"
+                  alt="Two Seals HVAC technicians servicing condominium equipment in Toronto"
+                  className="h-full w-full object-cover"
+                  loading="lazy"
+                  decoding="async"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#041b2e]/90 via-transparent to-transparent" />
+                <figcaption className="absolute bottom-0 left-0 right-0 p-6 text-white md:p-9">
+                  <span className="text-[10px] font-extrabold uppercase tracking-[.2em] text-cyan">01</span>
+                  <h3 className="mt-2 font-display text-2xl font-extrabold md:text-3xl">{t.teamCards[0][0]}</h3>
+                  <p className="mt-2 max-w-lg text-sm leading-6 text-white/65">{t.teamCards[0][1]}</p>
+                </figcaption>
+              </figure>
+
+              <figure data-reveal="right" className="team-photo group relative min-h-[320px] overflow-hidden rounded-[28px] bg-navy" style={{ '--reveal-delay': '100ms' }}>
+                <img
+                  src="/images/seals-client-care.webp"
+                  alt="Seals HVAC technician explaining service details to a condominium property manager"
+                  className="h-full w-full object-cover"
+                  loading="lazy"
+                  decoding="async"
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#041b2e]/80 via-[#041b2e]/10 to-transparent" />
+                <figcaption className="absolute bottom-0 left-0 max-w-sm p-6 text-white md:p-8">
+                  <span className="text-[10px] font-extrabold uppercase tracking-[.2em] text-cyan">02</span>
+                  <h3 className="mt-2 font-display text-xl font-extrabold md:text-2xl">{t.teamCards[1][0]}</h3>
+                  <p className="mt-2 text-sm leading-6 text-white/65">{t.teamCards[1][1]}</p>
+                </figcaption>
+              </figure>
+
+              <figure data-reveal="right" className="team-photo group relative min-h-[320px] overflow-hidden rounded-[28px] bg-navy" style={{ '--reveal-delay': '180ms' }}>
+                <img
+                  src="/images/seals-in-suite-service.webp"
+                  alt="Seals HVAC technician carefully servicing a fan coil inside a condominium suite"
+                  className="h-full w-full object-cover object-[center_45%]"
+                  loading="lazy"
+                  decoding="async"
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#041b2e]/85 via-[#041b2e]/20 to-transparent" />
+                <figcaption className="absolute bottom-0 left-0 max-w-sm p-6 text-white md:p-8">
+                  <span className="text-[10px] font-extrabold uppercase tracking-[.2em] text-cyan">03</span>
+                  <h3 className="mt-2 font-display text-xl font-extrabold md:text-2xl">{t.teamCards[2][0]}</h3>
+                  <p className="mt-2 text-sm leading-6 text-white/65">{t.teamCards[2][1]}</p>
+                </figcaption>
+              </figure>
+            </div>
+
+            <div data-reveal="up" className="mt-5 flex flex-col gap-4 rounded-2xl border border-slate-200 bg-[#f3f7fa] px-6 py-5 md:flex-row md:items-center md:justify-between md:px-8">
+              <div className="flex items-center gap-4">
+                <img src="https://www.sealshvac.ca/img/logo.png" alt="Seals HVAC mascot" className="h-14 w-14 object-contain" loading="lazy" />
+                <div>
+                  <p className="text-[10px] font-extrabold uppercase tracking-[.18em] text-brand-600">SEALS HVAC uniform</p>
+                  <p className="mt-1 text-sm font-bold text-navy">Recognizable on site. Accountable after every visit.</p>
+                </div>
+              </div>
+              <a href="#contact" className="inline-flex items-center justify-center gap-2 rounded-full bg-navy px-6 py-3 text-sm font-extrabold text-white transition hover:-translate-y-0.5 hover:bg-brand-600">{t.request}<ArrowRight size={16} /></a>
             </div>
           </div>
         </section>
