@@ -633,7 +633,21 @@ export default function Landing() {
                   <article key={title} data-anime-item className="service-card group flex min-h-[310px] flex-col justify-between rounded-2xl border border-slate-200 bg-white p-7 shadow-[0_12px_45px_rgba(8,43,70,.06)] transition duration-500 hover:-translate-y-2 hover:border-brand-500 hover:bg-navy hover:text-white">
                     <div className="flex items-start justify-between">
                       <span className="grid h-13 w-13 place-items-center rounded-xl bg-brand-50 p-3 text-brand-600 group-hover:bg-white/10 group-hover:text-cyan"><Icon size={25} /></span>
-                      <span className="font-serif text-3xl italic text-slate-300 group-hover:text-cyan">0{index + 1}</span>
+                      <span className="relative -mr-1 -mt-3 h-24 w-24 shrink-0">
+                        <span
+                          className={`service-card-mascot service-card-mascot-${index + 1} absolute right-0 top-0`}
+                          aria-hidden="true"
+                          style={{ '--mascot-delay': `${index * .32}s` }}
+                        >
+                          <img
+                            src="/images/seals-service-mascots.jpg"
+                            alt=""
+                            className={`service-mascot-sprite service-mascot-sprite-${index + 1}`}
+                            loading="lazy"
+                          />
+                        </span>
+                        <span className="absolute bottom-0 right-1 font-serif text-xl italic text-slate-300 transition group-hover:text-cyan">0{index + 1}</span>
+                      </span>
                     </div>
                     <div>
                       <h3 className="font-display text-xl font-extrabold">{title}</h3>

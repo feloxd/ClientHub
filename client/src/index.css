@@ -122,6 +122,38 @@
 }
 .service-card:hover::before, .why-card:hover::before, .process-card:hover::before { transform: translateX(120%); }
 .service-card:hover svg, .why-card:hover svg { animation: icon-tilt .55s ease; }
+.service-card-mascot {
+  width: 5rem;
+  height: 5rem;
+  overflow: hidden;
+  border-radius: 1.1rem;
+  background: #fff;
+  transform-origin: 50% 100%;
+  filter: drop-shadow(0 8px 12px rgba(8,43,69,.12));
+  transition: filter .45s ease, opacity .45s ease;
+}
+.service-mascot-sprite {
+  position: absolute;
+  width: 10rem;
+  height: 10rem;
+  max-width: none;
+  object-fit: cover;
+}
+.service-mascot-sprite-1 { left: 0; top: 0; }
+.service-mascot-sprite-2 { right: 0; top: 0; }
+.service-mascot-sprite-3 { left: 0; bottom: 0; }
+.service-mascot-sprite-4 { right: 0; bottom: 0; }
+.service-card-mascot-1 { animation: service-seal-diagnose 4.2s ease-in-out var(--mascot-delay) infinite; }
+.service-card-mascot-2 { animation: service-seal-airflow 4.6s ease-in-out var(--mascot-delay) infinite; }
+.service-card-mascot-3 { animation: service-seal-check 4.8s ease-in-out var(--mascot-delay) infinite; }
+.service-card-mascot-4 { animation: service-seal-install 4.4s ease-in-out var(--mascot-delay) infinite; }
+.service-card:hover .service-card-mascot-1 { animation: service-seal-diagnose-active .85s cubic-bezier(.22,1,.36,1) both; }
+.service-card:hover .service-card-mascot-2 { animation: service-seal-airflow-active 1s cubic-bezier(.22,1,.36,1) both; }
+.service-card:hover .service-card-mascot-3 { animation: service-seal-check-active .9s cubic-bezier(.22,1,.36,1) both; }
+.service-card:hover .service-card-mascot-4 { animation: service-seal-install-active .9s cubic-bezier(.22,1,.36,1) both; }
+.service-card:hover .service-card-mascot {
+  filter: drop-shadow(0 12px 18px rgba(69,194,223,.34));
+}
 .parallax-media {
   --parallax-y: 0px;
   transform: translate3d(0, var(--parallax-y), 0) scale(1.08);
@@ -216,6 +248,14 @@
 @keyframes mascot-halo { 0%, 100% { transform: scale(.96); opacity: .72; } 50% { transform: scale(1.04); opacity: 1; } }
 @keyframes mascot-peek { 0%, 100% { transform: translateY(10px) rotate(-2deg); } 45% { transform: translateY(-5px) rotate(2deg); } 60% { transform: translateY(-5px) rotate(-1deg); } }
 @keyframes mascot-mobile-wave { 0%, 100% { transform: rotate(-2deg) translateY(2px); } 50% { transform: rotate(3deg) translateY(-5px); } }
+@keyframes service-seal-diagnose { 0%, 72%, 100% { transform: translateY(2px) rotate(-2deg); } 80% { transform: translateY(-3px) rotate(3deg); } 88% { transform: translateY(0) rotate(-3deg); } }
+@keyframes service-seal-airflow { 0%, 100% { transform: translateX(-2px) translateY(2px); } 48% { transform: translateX(4px) translateY(-3px); } 60% { transform: translateX(1px) translateY(-1px); } }
+@keyframes service-seal-check { 0%, 70%, 100% { transform: translateY(2px) rotate(0); } 78% { transform: translateY(-3px) rotate(-3deg); } 86% { transform: translateY(-1px) rotate(2deg); } }
+@keyframes service-seal-install { 0%, 100% { transform: translateY(3px) scale(.98); } 48% { transform: translateY(-5px) scale(1.02); } 58% { transform: translateY(-3px) scale(1); } }
+@keyframes service-seal-diagnose-active { 0% { transform: scale(.96) rotate(-3deg); } 38% { transform: translateY(-7px) scale(1.07) rotate(6deg); } 70% { transform: translateY(-4px) scale(1.04) rotate(-4deg); } 100% { transform: translateY(-4px) scale(1.05) rotate(0); } }
+@keyframes service-seal-airflow-active { 0% { transform: translateX(-5px) scale(.97); } 45% { transform: translateX(7px) translateY(-4px) scale(1.07); } 72% { transform: translateX(1px) translateY(-6px) scale(1.04); } 100% { transform: translateY(-4px) scale(1.05); } }
+@keyframes service-seal-check-active { 0% { transform: scale(.96); } 35% { transform: translateY(-7px) rotate(-5deg) scale(1.06); } 55% { transform: translateY(-4px) rotate(4deg) scale(1.05); } 100% { transform: translateY(-4px) rotate(0) scale(1.05); } }
+@keyframes service-seal-install-active { 0% { transform: translateY(3px) scale(.94); } 44% { transform: translateY(-10px) scale(1.1); } 72% { transform: translateY(-3px) scale(1.03); } 100% { transform: translateY(-4px) scale(1.05); } }
 @keyframes hero-enter { from { opacity: 0; transform: translateY(28px); filter: blur(5px); } to { opacity: 1; transform: none; filter: blur(0); } }
 @keyframes trust-enter { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: none; } }
 @keyframes ribbon-enter { from { opacity: 0; transform: translateX(70px); } }
