@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { animate, spring, stagger } from 'animejs';
 import { Link } from 'react-router-dom';
 import {
@@ -19,9 +19,7 @@ import {
   Menu,
   MessageSquareText,
   MapPin,
-  Pause,
   PhoneCall,
-  Play,
   ShieldCheck,
   Snowflake,
   Star,
@@ -313,10 +311,8 @@ function MascotPose({ pose, className = '', label = 'Seals HVAC mascot' }) {
 export default function Landing() {
   const [menu, setMenu] = useState(false);
   const [lang, setLang] = useState('en');
-  const [heroPlaying, setHeroPlaying] = useState(true);
   const [sent, setSent] = useState('');
   const [sending, setSending] = useState(false);
-  const heroVideoRef = useRef(null);
   const t = copy[lang];
 
   useEffect(() => {
@@ -324,18 +320,6 @@ export default function Landing() {
     const description = document.querySelector('meta[name="description"]');
     if (description) description.setAttribute('content', 'Condominium HVAC repair, fan coil maintenance and installation across Toronto and the Greater Toronto Area.');
   }, []);
-
-  const toggleHeroVideo = async () => {
-    const video = heroVideoRef.current;
-    if (!video) return;
-    if (video.paused) {
-      await video.play();
-      setHeroPlaying(true);
-    } else {
-      video.pause();
-      setHeroPlaying(false);
-    }
-  };
 
   const celebrateMascot = () => {
     document.querySelectorAll('.hero-brand-mascot').forEach((mascot, index) => {
@@ -548,18 +532,13 @@ export default function Landing() {
 
       <main>
         <section className="relative min-h-[720px] bg-[#041b2e] text-white md:min-h-[820px]">
-          <video ref={heroVideoRef} className="hero-media absolute inset-0 h-full w-full object-cover" src="/media/seals-hvac-service-optimized.mp4" poster="/images/seals-mascot-hero-frame.jpg" autoPlay muted loop playsInline preload="metadata" />
+          <img className="hero-media hero-mascot-cinematic absolute inset-0 h-full w-full object-cover" src="/images/seals-mascot-hero-frame.jpg" alt="Seals HVAC mascot documenting fan coil service in a Toronto condominium" fetchPriority="high" decoding="async" />
           <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(2,20,35,.96)_0%,rgba(2,20,35,.76)_48%,rgba(2,20,35,.25)_100%)]" />
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,.25),transparent_45%,rgba(2,20,35,.72))]" />
           <div className="hero-scan absolute inset-0" aria-hidden="true" />
           <div className="hero-orbit absolute right-[8%] top-[20%] hidden h-72 w-72 rounded-full border border-cyan/20 lg:block" aria-hidden="true">
             <span className="absolute left-1/2 top-1/2 h-2.5 w-2.5 rounded-full bg-cyan shadow-[0_0_22px_#45c2df]" />
           </div>
-          <button type="button" onClick={celebrateMascot} className="hero-mascot-showcase absolute right-[5%] top-[25%] z-10 hidden w-[290px] flex-col items-center xl:flex" aria-label="Animate the Seals HVAC mascot">
-            <span className="hero-mascot-halo absolute top-3 h-64 w-64 rounded-full border border-cyan/30 bg-navy/45 backdrop-blur-md" />
-            <img src="/images/seals-mascot.png" alt="Official Seals HVAC seal mascot" className="hero-brand-mascot relative z-10 h-64 w-64 object-contain drop-shadow-[0_24px_35px_rgba(0,0,0,.45)]" />
-            <span className="relative z-10 -mt-2 rounded-full border border-white/20 bg-[#061d31]/85 px-5 py-2 text-[10px] font-extrabold uppercase tracking-[.18em] text-cyan backdrop-blur">{t.mascotTag}</span>
-          </button>
           <div className="container-wide relative flex min-h-[720px] items-end pb-24 pt-36 md:min-h-[820px] md:items-center md:pb-20 md:pt-32">
             <div className="max-w-[800px]">
               <button type="button" onClick={celebrateMascot} className="hero-enter hero-enter-1 mb-5 flex items-center gap-3 rounded-2xl border border-white/15 bg-navy/45 p-2 pr-4 text-left backdrop-blur xl:hidden" aria-label="Animate the Seals HVAC mascot">
@@ -590,7 +569,6 @@ export default function Landing() {
           <div className="location-ribbon absolute bottom-0 right-0 hidden bg-cyan px-8 py-5 text-xs font-extrabold uppercase tracking-[.14em] text-navy lg:block">
             Toronto · North York · GTA
           </div>
-          <button type="button" onClick={toggleHeroVideo} className="absolute bottom-7 left-5 z-10 grid h-11 w-11 place-items-center rounded-full border border-white/25 bg-navy/55 text-white backdrop-blur transition hover:border-cyan hover:text-cyan md:left-auto md:right-8" aria-label={heroPlaying ? 'Pause background video' : 'Play background video'}>{heroPlaying ? <Pause size={17} /> : <Play size={17} />}</button>
         </section>
 
         <section className="bg-[#f3f7fa] py-20 md:py-28">
