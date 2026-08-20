@@ -18,13 +18,17 @@ import {
   Image as ImageIcon,
   Menu,
   MessageSquareText,
+  MapPin,
   Pause,
   PhoneCall,
   Play,
   ShieldCheck,
   Snowflake,
+  Star,
   ThermometerSun,
+  Truck,
   UserRoundCheck,
+  UsersRound,
   Wind,
   Wrench,
   X
@@ -45,6 +49,10 @@ const copy = {
     heroText: 'Repair, maintenance and installation for condominiums and residential buildings. Clear answers, professional technicians and documented results.',
     heroPrimary: 'Request HVAC service',
     heroSecondary: 'See our services',
+    mascotTag: 'Meet the SEALS comfort crew',
+    mascotTitle: 'Friendly face. Serious HVAC service.',
+    mascotText: 'Our seal represents calm, clear help when your building needs it most.',
+    mascotStory: 'From cold and complicated to warm and comfortable.',
     trust: ['Condominium specialists', 'Clear estimates', 'Documented service'],
     introTag: 'Comfort without complications',
     introTitle: 'When the HVAC stops working, you need a clear solution.',
@@ -69,6 +77,21 @@ const copy = {
       ['Clear communication', 'Straightforward updates for building and property management teams.'],
       ['Respect for every home', 'Organized work areas, protective care and complete evidence.']
     ],
+    reputationTag: 'Local presence. Visible accountability.',
+    reputationTitle: 'A service company your residents can recognize and trust.',
+    reputationText: 'Professional service starts before the technician opens the equipment. Identified personnel, an organized arrival and clear follow-up help property teams know exactly who is working in the building and why.',
+    fleetLabel: 'SEALS fleet and team concept',
+    fleetNote: 'Presentation media — ready to be replaced with original SEALS field photography before launch.',
+    reputationCards: [
+      ['Recognizable on arrival', 'Coordinated uniforms and service vehicles create a clear, professional presence at the property.'],
+      ['Prepared for occupied buildings', 'Technicians arrive with the right information, tools and respect for residents and common areas.'],
+      ['Accountable after the visit', 'Quotes, photos, notes and final reports remain connected to the building account.']
+    ],
+    reputationProofTag: 'Trust that can be verified',
+    reputationProofTitle: 'Real proof will be connected before launch.',
+    reputationProofText: 'The final website is prepared to display verified Google feedback, active trade credentials, insurance documents and original team photography supplied by SEALS.',
+    reputationProofItems: ['Verified client feedback', 'Credentials and insurance', 'Original team and fleet media'],
+    reputationReviewNote: 'Google reviews and ratings will only be shown when connected to the verified SEALS business profile.',
     resultsTag: 'See the Seals standard',
     resultsTitle: 'Real service. Visible proof. Zero guesswork.',
     resultsText: 'See how we work inside occupied condominiums and how every visit becomes a clear, verifiable service record.',
@@ -150,6 +173,10 @@ const copy = {
     heroText: 'Réparation, entretien et installation pour copropriétés et immeubles résidentiels. Des réponses claires, des techniciens professionnels et des résultats documentés.',
     heroPrimary: 'Demander un service CVCA',
     heroSecondary: 'Voir nos services',
+    mascotTag: 'Découvrez l’équipe confort SEALS',
+    mascotTitle: 'Un visage sympathique. Un service CVCA sérieux.',
+    mascotText: 'Notre phoque représente une aide calme et claire lorsque votre immeuble en a le plus besoin.',
+    mascotStory: 'Du froid et compliqué au confort simple et chaleureux.',
     trust: ['Spécialistes en copropriété', 'Estimations claires', 'Service documenté'],
     introTag: 'Le confort sans complications',
     introTitle: 'Quand le système CVCA tombe en panne, il faut une solution claire.',
@@ -174,6 +201,21 @@ const copy = {
       ['Communication claire', 'Des mises à jour simples pour les gestionnaires d’immeubles.'],
       ['Respect de chaque domicile', 'Espace protégé, travail organisé et preuves complètes.']
     ],
+    reputationTag: 'Présence locale. Responsabilité visible.',
+    reputationTitle: 'Une entreprise que les résidents peuvent reconnaître et à laquelle ils peuvent faire confiance.',
+    reputationText: 'Le professionnalisme commence avant même l’ouverture de l’équipement. Un personnel identifié, une arrivée organisée et un suivi clair permettent aux gestionnaires de toujours savoir qui intervient dans l’immeuble et pourquoi.',
+    fleetLabel: 'Concept d’équipe et de flotte SEALS',
+    fleetNote: 'Média de présentation — prêt à être remplacé par les images originales de SEALS avant le lancement.',
+    reputationCards: [
+      ['Reconnaissable dès l’arrivée', 'Des uniformes et véhicules coordonnés créent une présence claire et professionnelle sur la propriété.'],
+      ['Prêt pour les immeubles occupés', 'Les techniciens arrivent avec les informations, les outils et le respect nécessaires pour les résidents.'],
+      ['Responsable après la visite', 'Les devis, photos, notes et rapports finaux restent liés au compte de l’immeuble.']
+    ],
+    reputationProofTag: 'Une confiance vérifiable',
+    reputationProofTitle: 'Des preuves réelles seront intégrées avant le lancement.',
+    reputationProofText: 'Le site final est prêt à présenter les avis Google vérifiés, les accréditations actives, les documents d’assurance et les photos originales fournies par SEALS.',
+    reputationProofItems: ['Avis clients vérifiés', 'Accréditations et assurance', 'Photos originales de l’équipe et de la flotte'],
+    reputationReviewNote: 'Les avis et évaluations Google ne seront affichés qu’après connexion au profil d’entreprise SEALS vérifié.',
     resultsTag: 'Découvrez la norme Seals',
     resultsTitle: 'Un vrai service. Des preuves visibles. Aucune incertitude.',
     resultsText: 'Voyez comment nous travaillons dans les copropriétés occupées et comment chaque visite devient un dossier de service clair et vérifiable.',
@@ -285,6 +327,19 @@ export default function Landing() {
       video.pause();
       setHeroPlaying(false);
     }
+  };
+
+  const celebrateMascot = () => {
+    document.querySelectorAll('.hero-brand-mascot').forEach((mascot, index) => {
+      animate(mascot, {
+        rotateY: '1turn',
+        rotateZ: [0, -5, 4, 0],
+        scale: [1, 1.12, 1],
+        duration: 900,
+        delay: index * 70,
+        ease: spring({ bounce: .38, duration: 820 })
+      });
+    });
   };
 
   useEffect(() => {
@@ -492,8 +547,17 @@ export default function Landing() {
           <div className="hero-orbit absolute right-[8%] top-[20%] hidden h-72 w-72 rounded-full border border-cyan/20 lg:block" aria-hidden="true">
             <span className="absolute left-1/2 top-1/2 h-2.5 w-2.5 rounded-full bg-cyan shadow-[0_0_22px_#45c2df]" />
           </div>
+          <button type="button" onClick={celebrateMascot} className="hero-mascot-showcase absolute right-[5%] top-[25%] z-10 hidden w-[290px] flex-col items-center xl:flex" aria-label="Animate the Seals HVAC mascot">
+            <span className="hero-mascot-halo absolute top-3 h-64 w-64 rounded-full border border-cyan/30 bg-navy/45 backdrop-blur-md" />
+            <img src="/images/seals-mascot.png" alt="Official Seals HVAC seal mascot" className="hero-brand-mascot relative z-10 h-64 w-64 object-contain drop-shadow-[0_24px_35px_rgba(0,0,0,.45)]" />
+            <span className="relative z-10 -mt-2 rounded-full border border-white/20 bg-[#061d31]/85 px-5 py-2 text-[10px] font-extrabold uppercase tracking-[.18em] text-cyan backdrop-blur">{t.mascotTag}</span>
+          </button>
           <div className="container-wide relative flex min-h-[720px] items-end pb-24 pt-36 md:min-h-[820px] md:items-center md:pb-20 md:pt-32">
             <div className="max-w-[800px]">
+              <button type="button" onClick={celebrateMascot} className="hero-enter hero-enter-1 mb-5 flex items-center gap-3 rounded-2xl border border-white/15 bg-navy/45 p-2 pr-4 text-left backdrop-blur xl:hidden" aria-label="Animate the Seals HVAC mascot">
+                <img src="/images/seals-mascot.png" alt="Official Seals HVAC seal mascot" className="hero-brand-mascot h-16 w-16 object-contain" />
+                <span className="text-[10px] font-extrabold uppercase leading-5 tracking-[.16em] text-cyan">{t.mascotTag}</span>
+              </button>
               <p className="hero-enter hero-enter-1 mb-5 flex items-center gap-3 text-[10px] font-extrabold uppercase tracking-[.22em] text-cyan md:text-xs">
                 <Snowflake size={17} /> {t.heroTag}
               </p>
@@ -522,17 +586,36 @@ export default function Landing() {
         </section>
 
         <section className="bg-[#f3f7fa] py-20 md:py-28">
-          <div className="container-site grid gap-12 lg:grid-cols-[1.05fr_.95fr] lg:items-center">
-            <div data-reveal="left">
-              <p className="kicker">{t.introTag}</p>
-              <MotionHeading className="mt-5 font-display text-4xl font-extrabold leading-[1.02] tracking-[-.045em] text-navy md:text-6xl">{t.introTitle}</MotionHeading>
-            </div>
-            <div data-reveal="right">
-              <p className="text-base leading-8 text-slate-600 md:text-lg">{t.introText}</p>
-              <div className="mt-7 space-y-4">
-                {t.introPoints.map((item, index) => <div key={item} data-reveal="up" style={{ '--reveal-delay': `${index * 90}ms` }} className="flex items-center gap-3 border-b border-slate-200 pb-4 text-sm font-extrabold"><BadgeCheck className="icon-pop text-brand-600" size={20} />{item}</div>)}
+          <div className="container-site">
+            <div className="grid gap-12 lg:grid-cols-[1.05fr_.95fr] lg:items-center">
+              <div data-reveal="left">
+                <p className="kicker">{t.introTag}</p>
+                <MotionHeading className="mt-5 font-display text-4xl font-extrabold leading-[1.02] tracking-[-.045em] text-navy md:text-6xl">{t.introTitle}</MotionHeading>
+              </div>
+              <div data-reveal="right">
+                <p className="text-base leading-8 text-slate-600 md:text-lg">{t.introText}</p>
+                <div className="mt-7 space-y-4">
+                  {t.introPoints.map((item, index) => <div key={item} data-reveal="up" style={{ '--reveal-delay': `${index * 90}ms` }} className="flex items-center gap-3 border-b border-slate-200 pb-4 text-sm font-extrabold"><BadgeCheck className="icon-pop text-brand-600" size={20} />{item}</div>)}
+                </div>
               </div>
             </div>
+            <div data-reveal="up" className="mascot-manifesto relative mt-14 grid overflow-hidden rounded-[30px] bg-navy text-white shadow-[0_30px_80px_rgba(4,27,46,.18)] md:grid-cols-[240px_1fr] md:items-center">
+              <button type="button" onClick={celebrateMascot} className="relative flex min-h-[230px] items-center justify-center overflow-hidden bg-cyan/10" aria-label="Animate the Seals HVAC mascot">
+                <span className="absolute h-44 w-44 rounded-full bg-cyan/20 blur-2xl" />
+                <img src="/images/seals-mascot.png" alt="Seals HVAC official brand mascot" className="hero-brand-mascot relative h-48 w-48 object-contain drop-shadow-[0_18px_30px_rgba(0,0,0,.25)]" loading="lazy" />
+              </button>
+              <div className="p-7 md:p-10">
+                <p className="text-[10px] font-extrabold uppercase tracking-[.22em] text-cyan">{t.mascotTag}</p>
+                <h2 className="mt-3 font-display text-3xl font-extrabold tracking-[-.04em] md:text-5xl">{t.mascotTitle}</h2>
+                <p className="mt-4 max-w-2xl text-sm leading-7 text-white/65 md:text-base">{t.mascotText}</p>
+              </div>
+            </div>
+            <figure data-reveal="scale" className="relative mt-6 overflow-hidden rounded-[30px] border-[6px] border-white bg-navy shadow-[0_28px_70px_rgba(4,27,46,.16)]">
+              <img src="/images/seals-hvac-storyboard.jpeg" alt="SEALS HVAC comfort story featuring the official seal mascot in Toronto" className="aspect-[2/1] w-full object-cover" loading="lazy" decoding="async" />
+              <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-navy via-navy/75 to-transparent px-6 pb-6 pt-20 text-white md:px-9 md:pb-8">
+                <p className="max-w-2xl font-display text-2xl font-extrabold tracking-[-.03em] md:text-4xl">{t.mascotStory}</p>
+              </figcaption>
+            </figure>
           </div>
         </section>
 
@@ -561,9 +644,18 @@ export default function Landing() {
                 );
               })}
             </div>
-            <div data-reveal="scale" className="quote-banner mt-8 flex flex-col items-start justify-between gap-5 overflow-hidden rounded-2xl bg-cyan px-6 py-7 text-navy md:flex-row md:items-center md:px-9">
-              <div><h3 className="font-display text-xl font-extrabold md:text-2xl">{t.quote}</h3><p className="mt-2 max-w-2xl text-sm leading-6 text-navy/70">{t.quoteText}</p></div>
-              <a href="#contact" className="inline-flex shrink-0 items-center gap-2 rounded-full bg-navy px-6 py-3.5 text-sm font-extrabold text-white">{t.request}<ArrowRight size={16} /></a>
+            <div data-reveal="scale" className="quote-banner mt-8 flex min-h-[150px] flex-col items-start justify-between gap-5 overflow-hidden rounded-2xl bg-cyan px-6 py-7 text-navy md:flex-row md:items-center md:px-9 md:pr-8">
+              <div className="relative z-10 md:max-w-[56%]"><h3 className="font-display text-xl font-extrabold md:text-2xl">{t.quote}</h3><p className="mt-2 max-w-2xl text-sm leading-6 text-navy/70">{t.quoteText}</p></div>
+              <button type="button" onClick={celebrateMascot} className="service-mascot-guide absolute bottom-[-26px] right-[180px] z-10 hidden w-36 md:block lg:right-[205px]" aria-label="Animate the Seals HVAC mascot">
+                <span className="absolute left-1/2 top-7 h-20 w-20 -translate-x-1/2 rounded-full bg-white/25 blur-xl" />
+                <img src="/images/seals-mascot.png" alt="Seals HVAC mascot ready to help" className="hero-brand-mascot relative h-36 w-36 object-contain drop-shadow-[0_12px_20px_rgba(8,43,69,.2)]" loading="lazy" />
+              </button>
+              <div className="relative z-10 flex w-full items-center justify-between gap-4 md:w-auto">
+                <button type="button" onClick={celebrateMascot} className="service-mascot-mobile md:hidden" aria-label="Animate the Seals HVAC mascot">
+                  <img src="/images/seals-mascot.png" alt="Seals HVAC mascot ready to help" className="hero-brand-mascot h-20 w-20 object-contain" loading="lazy" />
+                </button>
+                <a href="#contact" className="inline-flex shrink-0 items-center gap-2 rounded-full bg-navy px-6 py-3.5 text-sm font-extrabold text-white shadow-[0_12px_28px_rgba(8,43,69,.2)] transition hover:-translate-y-0.5 hover:bg-white hover:text-navy">{t.request}<ArrowRight size={16} /></a>
+              </div>
             </div>
           </div>
         </section>
@@ -633,13 +725,80 @@ export default function Landing() {
 
             <div data-reveal="up" className="mt-5 flex flex-col gap-4 rounded-2xl border border-slate-200 bg-[#f3f7fa] px-6 py-5 md:flex-row md:items-center md:justify-between md:px-8">
               <div className="flex items-center gap-4">
-                <img src="https://www.sealshvac.ca/img/logo.png" alt="Seals HVAC mascot" className="h-14 w-14 object-contain" loading="lazy" />
+                <img src="/images/seals-mascot.png" alt="Seals HVAC mascot" className="h-20 w-20 object-contain" loading="lazy" />
                 <div>
                   <p className="text-[10px] font-extrabold uppercase tracking-[.18em] text-brand-600">SEALS HVAC uniform</p>
                   <p className="mt-1 text-sm font-bold text-navy">Recognizable on site. Accountable after every visit.</p>
                 </div>
               </div>
               <a href="#contact" className="inline-flex items-center justify-center gap-2 rounded-full bg-navy px-6 py-3 text-sm font-extrabold text-white transition hover:-translate-y-0.5 hover:bg-brand-600">{t.request}<ArrowRight size={16} /></a>
+            </div>
+          </div>
+        </section>
+
+        <section className="fleet-reputation overflow-hidden bg-[#061d31] py-20 text-white md:py-28">
+          <div className="container-wide">
+            <div className="grid gap-9 lg:grid-cols-[.82fr_1.18fr] lg:items-end">
+              <div data-reveal="left">
+                <p className="kicker text-cyan">{t.reputationTag}</p>
+                <MotionHeading className="mt-5 font-display text-4xl font-extrabold leading-[1.02] tracking-[-.045em] md:text-6xl">{t.reputationTitle}</MotionHeading>
+              </div>
+              <p data-reveal="right" className="max-w-2xl text-base leading-8 text-white/62 lg:ml-auto lg:text-lg">{t.reputationText}</p>
+            </div>
+
+            <figure data-reveal="scale" className="fleet-portrait group relative mt-12 min-h-[430px] overflow-hidden rounded-[30px] border border-white/10 bg-[#0b2a43] shadow-[0_35px_90px_rgba(0,0,0,.28)] md:min-h-[650px]">
+              <video
+                className="absolute inset-0 h-full w-full object-cover object-center transition duration-1000 group-hover:scale-[1.025]"
+                src="/media/seals-hvac-brand-story.mp4"
+                poster="/images/seals-team-fleet-concept.png"
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                aria-label="SEALS HVAC branded service vehicle presentation concept"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#041725]/95 via-transparent to-[#041725]/10" />
+              <button type="button" onClick={celebrateMascot} className="absolute right-5 top-5 z-10 grid h-28 w-28 place-items-center rounded-full border border-white/20 bg-navy/75 p-3 shadow-2xl backdrop-blur md:right-8 md:top-8 md:h-36 md:w-36" aria-label="Animate the Seals HVAC mascot">
+                <img src="/images/seals-mascot.png" alt="Official Seals HVAC mascot badge" className="hero-brand-mascot h-full w-full object-contain" loading="lazy" />
+              </button>
+              <figcaption className="absolute inset-x-0 bottom-0 flex flex-col gap-4 p-6 md:flex-row md:items-end md:justify-between md:p-9">
+                <div>
+                  <span className="inline-flex items-center gap-2 rounded-full border border-cyan/30 bg-navy/75 px-4 py-2 text-[10px] font-extrabold uppercase tracking-[.18em] text-cyan backdrop-blur"><UsersRound size={15} />{t.fleetLabel}</span>
+                  <p className="mt-3 max-w-2xl text-xs leading-6 text-white/60">{t.fleetNote}</p>
+                </div>
+                <span className="inline-flex w-fit items-center gap-2 rounded-full bg-cyan px-4 py-2 text-[10px] font-extrabold uppercase tracking-[.16em] text-navy"><MapPin size={14} />Toronto & GTA</span>
+              </figcaption>
+            </figure>
+
+            <div data-anime-stagger className="mt-5 grid gap-4 md:grid-cols-3">
+              {t.reputationCards.map(([title, text], index) => {
+                const Icon = [Truck, ShieldCheck, ClipboardCheck][index];
+                return (
+                  <article key={title} data-anime-item className="group rounded-[24px] border border-white/10 bg-white/[.055] p-7 backdrop-blur transition duration-500 hover:-translate-y-1 hover:border-cyan/45 hover:bg-white/[.09]">
+                    <span className="grid h-12 w-12 place-items-center rounded-2xl bg-cyan/10 text-cyan"><Icon size={22} /></span>
+                    <h3 className="mt-7 font-display text-xl font-extrabold">{title}</h3>
+                    <p className="mt-3 text-sm leading-7 text-white/55">{text}</p>
+                  </article>
+                );
+              })}
+            </div>
+
+            <div data-reveal="up" className="mt-12 grid overflow-hidden rounded-[28px] bg-white text-navy shadow-[0_30px_80px_rgba(0,0,0,.22)] lg:grid-cols-[.78fr_1.22fr]">
+              <div className="reputation-score flex min-h-[280px] flex-col justify-between bg-[#eaf8fc] p-7 md:p-10">
+                <div>
+                  <p className="text-[10px] font-extrabold uppercase tracking-[.2em] text-brand-600">{t.reputationProofTag}</p>
+                  <div className="mt-7 flex gap-1 text-amber-400" aria-label="Review presentation placeholders">{[0, 1, 2, 3, 4].map((item) => <Star key={item} size={25} fill="currentColor" />)}</div>
+                </div>
+                <p className="max-w-sm text-xs font-bold leading-6 text-slate-500">{t.reputationReviewNote}</p>
+              </div>
+              <div className="p-7 md:p-10 lg:p-12">
+                <h3 className="font-display text-3xl font-extrabold leading-tight tracking-[-.04em] md:text-5xl">{t.reputationProofTitle}</h3>
+                <p className="mt-5 max-w-3xl text-sm leading-7 text-slate-600 md:text-base">{t.reputationProofText}</p>
+                <div className="mt-8 grid gap-3 sm:grid-cols-3">
+                  {t.reputationProofItems.map((item) => <span key={item} className="flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-3 text-xs font-extrabold"><BadgeCheck size={17} className="shrink-0 text-brand-600" />{item}</span>)}
+                </div>
+              </div>
             </div>
           </div>
         </section>

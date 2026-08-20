@@ -86,6 +86,21 @@
 }
 .hero-orbit { animation: orbit-rotate 18s linear infinite; }
 .hero-orbit span { transform: translate(-50%, -50%) translateY(-144px); }
+.hero-mascot-showcase { perspective: 900px; }
+.hero-mascot-showcase .hero-brand-mascot { animation: mascot-float 4.8s ease-in-out infinite; transform-style: preserve-3d; will-change: transform; }
+.hero-mascot-halo { animation: mascot-halo 3.8s ease-in-out infinite; box-shadow: 0 0 0 24px rgba(69,194,223,.025), 0 0 70px rgba(69,194,223,.14); }
+.mascot-manifesto::after {
+  content: "";
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  right: -120px;
+  top: -150px;
+  border: 1px solid rgba(69,194,223,.2);
+  border-radius: 50%;
+  box-shadow: 0 0 0 55px rgba(69,194,223,.025);
+  pointer-events: none;
+}
 .hero-enter { opacity: 0; animation: hero-enter .9s cubic-bezier(.22,1,.36,1) forwards; }
 .hero-enter-1 { animation-delay: .18s; }
 .hero-enter-2 { animation-delay: .32s; }
@@ -172,6 +187,9 @@
   border-radius: 50%;
   animation: orbit-rotate 14s linear infinite;
 }
+.service-mascot-guide { transform-origin: 50% 100%; animation: mascot-peek 4.2s ease-in-out infinite; }
+.service-mascot-guide:hover { animation-play-state: paused; }
+.service-mascot-mobile { animation: mascot-mobile-wave 3.6s ease-in-out infinite; transform-origin: 50% 100%; }
 .process-card:hover { transform: translateY(-6px); box-shadow: 0 18px 50px rgba(8,43,70,.11); transition: .4s ease; }
 .portal-preview { animation: portal-float 5s ease-in-out infinite; transform-origin: center; }
 .portal-ticket { opacity: 0; }
@@ -194,6 +212,10 @@
 @keyframes hero-breathe { from { transform: scale(1.01); } to { transform: scale(1.08); } }
 @keyframes hero-scan { 0%, 22% { background-position: 180% 0; } 70%, 100% { background-position: -120% 0; } }
 @keyframes orbit-rotate { to { transform: rotate(360deg); } }
+@keyframes mascot-float { 0%, 100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-12px) rotate(1.5deg); } }
+@keyframes mascot-halo { 0%, 100% { transform: scale(.96); opacity: .72; } 50% { transform: scale(1.04); opacity: 1; } }
+@keyframes mascot-peek { 0%, 100% { transform: translateY(10px) rotate(-2deg); } 45% { transform: translateY(-5px) rotate(2deg); } 60% { transform: translateY(-5px) rotate(-1deg); } }
+@keyframes mascot-mobile-wave { 0%, 100% { transform: rotate(-2deg) translateY(2px); } 50% { transform: rotate(3deg) translateY(-5px); } }
 @keyframes hero-enter { from { opacity: 0; transform: translateY(28px); filter: blur(5px); } to { opacity: 1; transform: none; filter: blur(0); } }
 @keyframes trust-enter { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: none; } }
 @keyframes ribbon-enter { from { opacity: 0; transform: translateX(70px); } }

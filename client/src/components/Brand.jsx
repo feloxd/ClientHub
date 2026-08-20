@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import { animate, spring, utils } from 'animejs';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
-const LOGO_URL = 'https://www.sealshvac.ca/img/logo.png';
+const LOGO_URL = '/images/seals-mascot.png';
 
 export default function Brand({ light = false, compact = false }) {
   const logoRef = useRef(null);
@@ -42,7 +42,7 @@ export default function Brand({ light = false, compact = false }) {
         ref={logoRef}
         src={LOGO_URL}
         alt="Seals HVAC mascot"
-        className={`brand-seal ${compact ? 'h-9 w-9' : 'h-12 w-12'} object-contain`}
+        className={`brand-seal ${compact ? 'h-12 w-12' : 'h-16 w-16'} object-contain`}
       />
       <span
         className={`font-display text-[15px] font-extrabold leading-[1.05] tracking-[.08em] ${
