@@ -154,6 +154,128 @@
 .service-card:hover .service-card-mascot {
   filter: drop-shadow(0 12px 18px rgba(69,194,223,.34));
 }
+.mascot-pose {
+  position: relative;
+  display: block;
+  flex: 0 0 auto;
+  overflow: hidden;
+  border-radius: 1.25rem;
+  background: #fff;
+  transform-origin: 50% 100%;
+  filter: drop-shadow(0 10px 18px rgba(4,27,46,.16));
+  will-change: transform;
+}
+.mascot-pose img {
+  position: absolute;
+  width: 300%;
+  height: 300%;
+  max-width: none;
+  object-fit: fill;
+  pointer-events: none;
+  user-select: none;
+}
+.mascot-pose-1 img { left: 0; top: 0; }
+.mascot-pose-2 img { left: -100%; top: 0; }
+.mascot-pose-3 img { left: -200%; top: 0; }
+.mascot-pose-4 img { left: 0; top: -100%; }
+.mascot-pose-5 img { left: -100%; top: -100%; }
+.mascot-pose-6 img { left: -200%; top: -100%; }
+.mascot-pose-7 img { left: 0; top: -200%; }
+.mascot-pose-8 img { left: -100%; top: -200%; }
+.mascot-pose-9 img { left: -200%; top: -200%; }
+.mascot-pose-1 { animation: seal-talk 3.8s ease-in-out infinite; }
+.mascot-pose-2 { animation: seal-approve 4.4s ease-in-out infinite; }
+.mascot-pose-3 { animation: seal-evidence 4.8s ease-in-out infinite; }
+.mascot-pose-4 { animation: seal-wave 4s ease-in-out infinite; }
+.mascot-pose-5 { animation: seal-write 3.2s ease-in-out infinite; }
+.mascot-pose-6 { animation: seal-review 4.2s ease-in-out infinite; }
+.mascot-pose-7 { animation: seal-schedule 4.6s ease-in-out infinite; }
+.mascot-pose-8 { animation: seal-close 4.4s ease-in-out infinite; }
+.mascot-pose-9 { animation: seal-portal 4.8s ease-in-out infinite; }
+.reputation-mascot-card { isolation: isolate; }
+.reputation-mascot-card > :not(.reputation-card-seal) { position: relative; z-index: 2; }
+.reputation-card-seal {
+  position: absolute;
+  right: 1.15rem;
+  top: 1.15rem;
+  z-index: 1;
+  width: 6.5rem;
+  height: 6.5rem;
+  opacity: .9;
+}
+.reputation-proof-seal {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  width: 9rem;
+  height: 9rem;
+  opacity: .92;
+}
+.why-card > :not(.why-card-seal) { position: relative; z-index: 2; }
+.why-card-seal {
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  z-index: 1;
+  width: 7.25rem;
+  height: 7.25rem;
+  opacity: .95;
+  box-shadow: 0 0 0 1px rgba(69,194,223,.18), 0 18px 38px rgba(0,0,0,.18);
+}
+.why-card:hover .why-card-seal,
+.process-card:hover .process-card-seal,
+.trust-mascot-card:hover .trust-card-seal,
+.reputation-mascot-card:hover .reputation-card-seal {
+  animation-play-state: paused;
+  transform: translateY(-6px) scale(1.055) rotate(1deg);
+  filter: drop-shadow(0 16px 24px rgba(69,194,223,.3));
+  transition: transform .5s cubic-bezier(.22,1,.36,1), filter .5s ease;
+}
+.process-card-seal {
+  position: absolute;
+  right: 1rem;
+  top: .75rem;
+  width: 7.2rem;
+  height: 7.2rem;
+  z-index: 2;
+}
+.portal-guide-seal {
+  position: absolute;
+  bottom: 1.1rem;
+  right: .8rem;
+  z-index: 5;
+  width: 9rem;
+  height: 9rem;
+  box-shadow: 0 0 0 10px rgba(69,194,223,.12), 0 24px 55px rgba(4,27,46,.2);
+}
+.trust-mascot-card > :not(.trust-card-seal) { position: relative; z-index: 2; }
+.trust-card-seal {
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  width: 7.8rem;
+  height: 7.8rem;
+  opacity: .92;
+}
+.contact-note-seal {
+  width: 7rem;
+  height: 7rem;
+  box-shadow: 0 0 0 8px rgba(69,194,223,.08);
+}
+.contact-mascot-note { transition: border-color .4s ease, background .4s ease, transform .4s ease; }
+.contact-mascot-note:hover { transform: translateY(-4px); border-color: rgba(69,194,223,.5); background: rgba(255,255,255,.085); }
+.contact-form-glow > * { position: relative; z-index: 2; }
+.contact-form-watermark {
+  position: absolute !important;
+  bottom: -4rem;
+  right: -3rem;
+  z-index: 0 !important;
+  width: 17rem;
+  height: 17rem;
+  opacity: .055;
+  filter: none;
+  pointer-events: none;
+}
 .parallax-media {
   --parallax-y: 0px;
   transform: translate3d(0, var(--parallax-y), 0) scale(1.08);
@@ -256,6 +378,15 @@
 @keyframes service-seal-airflow-active { 0% { transform: translateX(-5px) scale(.97); } 45% { transform: translateX(7px) translateY(-4px) scale(1.07); } 72% { transform: translateX(1px) translateY(-6px) scale(1.04); } 100% { transform: translateY(-4px) scale(1.05); } }
 @keyframes service-seal-check-active { 0% { transform: scale(.96); } 35% { transform: translateY(-7px) rotate(-5deg) scale(1.06); } 55% { transform: translateY(-4px) rotate(4deg) scale(1.05); } 100% { transform: translateY(-4px) rotate(0) scale(1.05); } }
 @keyframes service-seal-install-active { 0% { transform: translateY(3px) scale(.94); } 44% { transform: translateY(-10px) scale(1.1); } 72% { transform: translateY(-3px) scale(1.03); } 100% { transform: translateY(-4px) scale(1.05); } }
+@keyframes seal-talk { 0%, 64%, 100% { transform: translateY(0) rotate(0); } 72% { transform: translateY(-4px) rotate(-2deg); } 80% { transform: translateY(-2px) rotate(2deg); } 88% { transform: translateY(-4px) rotate(-1deg); } }
+@keyframes seal-approve { 0%, 70%, 100% { transform: translateY(0) scale(1); } 78% { transform: translateY(-5px) scale(1.035) rotate(-2deg); } 88% { transform: translateY(-2px) scale(1.015) rotate(1deg); } }
+@keyframes seal-evidence { 0%, 68%, 100% { transform: translateY(0); filter: drop-shadow(0 10px 18px rgba(4,27,46,.16)); } 76% { transform: translateY(-5px) rotate(2deg); filter: drop-shadow(0 10px 24px rgba(69,194,223,.4)); } 83% { transform: translateY(-3px) rotate(-1deg); } }
+@keyframes seal-wave { 0%, 62%, 100% { transform: translateY(0) rotate(0); } 70% { transform: translateY(-5px) rotate(-4deg); } 78% { transform: translateY(-3px) rotate(4deg); } 86% { transform: translateY(-5px) rotate(-2deg); } }
+@keyframes seal-write { 0%, 100% { transform: translateY(1px) rotate(-1deg); } 45% { transform: translateY(-3px) rotate(1.5deg); } 55% { transform: translateY(-2px) rotate(.2deg); } }
+@keyframes seal-review { 0%, 100% { transform: translateX(-2px) translateY(1px); } 46% { transform: translateX(4px) translateY(-4px) rotate(1deg); } 62% { transform: translateX(1px) translateY(-2px); } }
+@keyframes seal-schedule { 0%, 66%, 100% { transform: translateY(0) scale(1); } 75% { transform: translateY(-5px) scale(1.035); } 84% { transform: translateY(-2px) scale(.99); } }
+@keyframes seal-close { 0%, 70%, 100% { transform: translateY(0) rotate(0); } 78% { transform: translateY(-5px) rotate(-3deg); } 87% { transform: translateY(-3px) rotate(2deg); } }
+@keyframes seal-portal { 0%, 100% { transform: translateY(2px) rotate(-1deg); } 50% { transform: translateY(-6px) rotate(1deg); } }
 @keyframes hero-enter { from { opacity: 0; transform: translateY(28px); filter: blur(5px); } to { opacity: 1; transform: none; filter: blur(0); } }
 @keyframes trust-enter { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: none; } }
 @keyframes ribbon-enter { from { opacity: 0; transform: translateX(70px); } }

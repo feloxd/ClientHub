@@ -302,6 +302,14 @@ function MotionHeading({ children, className = '' }) {
   );
 }
 
+function MascotPose({ pose, className = '', label = 'Seals HVAC mascot' }) {
+  return (
+    <span className={`mascot-pose mascot-pose-${pose} ${className}`} role="img" aria-label={label}>
+      <img src="/images/seals-mascot-process-sprite.png" alt="" aria-hidden="true" loading="lazy" decoding="async" />
+    </span>
+  );
+}
+
 export default function Landing() {
   const [menu, setMenu] = useState(false);
   const [lang, setLang] = useState('en');
@@ -540,7 +548,7 @@ export default function Landing() {
 
       <main>
         <section className="relative min-h-[720px] bg-[#041b2e] text-white md:min-h-[820px]">
-          <video ref={heroVideoRef} className="hero-media absolute inset-0 h-full w-full object-cover" src="/media/seals-hvac-service-optimized.mp4" poster="/images/seals-service-proof-v2.webp" autoPlay muted loop playsInline preload="metadata" />
+          <video ref={heroVideoRef} className="hero-media absolute inset-0 h-full w-full object-cover" src="/media/seals-hvac-service-optimized.mp4" poster="/images/seals-mascot-hero-frame.jpg" autoPlay muted loop playsInline preload="metadata" />
           <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(2,20,35,.96)_0%,rgba(2,20,35,.76)_48%,rgba(2,20,35,.25)_100%)]" />
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,.25),transparent_45%,rgba(2,20,35,.72))]" />
           <div className="hero-scan absolute inset-0" aria-hidden="true" />
@@ -789,7 +797,8 @@ export default function Landing() {
               {t.reputationCards.map(([title, text], index) => {
                 const Icon = [Truck, ShieldCheck, ClipboardCheck][index];
                 return (
-                  <article key={title} data-anime-item className="group rounded-[24px] border border-white/10 bg-white/[.055] p-7 backdrop-blur transition duration-500 hover:-translate-y-1 hover:border-cyan/45 hover:bg-white/[.09]">
+                  <article key={title} data-anime-item className="reputation-mascot-card group rounded-[24px] border border-white/10 bg-white/[.055] p-7 backdrop-blur transition duration-500 hover:-translate-y-1 hover:border-cyan/45 hover:bg-white/[.09]">
+                    <MascotPose pose={[4, 7, 3][index]} className="reputation-card-seal" label={`${title} Seals mascot`} />
                     <span className="grid h-12 w-12 place-items-center rounded-2xl bg-cyan/10 text-cyan"><Icon size={22} /></span>
                     <h3 className="mt-7 font-display text-xl font-extrabold">{title}</h3>
                     <p className="mt-3 text-sm leading-7 text-white/55">{text}</p>
@@ -799,7 +808,8 @@ export default function Landing() {
             </div>
 
             <div data-reveal="up" className="mt-12 grid overflow-hidden rounded-[28px] bg-white text-navy shadow-[0_30px_80px_rgba(0,0,0,.22)] lg:grid-cols-[.78fr_1.22fr]">
-              <div className="reputation-score flex min-h-[280px] flex-col justify-between bg-[#eaf8fc] p-7 md:p-10">
+              <div className="reputation-score relative flex min-h-[280px] flex-col justify-between overflow-hidden bg-[#eaf8fc] p-7 md:p-10">
+                <MascotPose pose={9} className="reputation-proof-seal" label="Seals mascot presenting verified information" />
                 <div>
                   <p className="text-[10px] font-extrabold uppercase tracking-[.2em] text-brand-600">{t.reputationProofTag}</p>
                   <div className="mt-7 flex gap-1 text-amber-400" aria-label="Review presentation placeholders">{[0, 1, 2, 3, 4].map((item) => <Star key={item} size={25} fill="currentColor" />)}</div>
@@ -890,7 +900,8 @@ export default function Landing() {
               {t.whyItems.map(([title, text], index) => {
                 const Icon = whyIcons[index];
                 return (
-                  <article key={title} data-anime-item className="why-card min-h-[240px] bg-[#0a2740] p-7 md:p-9">
+                  <article key={title} data-anime-item className="why-card min-h-[265px] bg-[#0a2740] p-7 md:p-9">
+                    <MascotPose pose={index + 1} className={`why-card-seal why-card-seal-${index + 1}`} label={`${title} Seals mascot`} />
                     <Icon className="text-cyan" size={27} />
                     <h3 className="mt-10 font-display text-xl font-extrabold">{title}</h3>
                     <p className="mt-3 text-sm leading-6 text-white/55">{text}</p>
@@ -912,7 +923,8 @@ export default function Landing() {
               {t.processItems.map(([number, title, text], index) => {
                 const Icon = processIcons[index];
                 return (
-                  <article key={title} data-anime-item className="process-card relative rounded-2xl border border-slate-200 bg-white p-7">
+                  <article key={title} data-anime-item className="process-card relative rounded-2xl border border-slate-200 bg-white p-7 pt-24">
+                    <MascotPose pose={index + 5} className={`process-card-seal process-card-seal-${index + 1}`} label={`${title} Seals mascot`} />
                     <span className="relative z-10 grid h-14 w-14 place-items-center rounded-full bg-navy text-cyan shadow-[0_0_0_8px_#f2f6f9]"><Icon size={22} /></span>
                     <span className="mt-8 block text-[10px] font-extrabold uppercase tracking-[.2em] text-brand-600">{number}</span>
                     <h3 className="mt-2 font-display text-xl font-extrabold">{title}</h3>
@@ -938,7 +950,8 @@ export default function Landing() {
                 <Link to="/login" className="inline-flex items-center justify-center gap-2 rounded-full border border-white/25 px-6 py-3.5 text-sm font-bold text-white">{t.portalLogin}</Link>
               </div>
             </div>
-            <div className="relative min-h-[440px] bg-[#e8f0f5] p-5 md:p-10">
+            <div className="relative min-h-[440px] overflow-hidden bg-[#e8f0f5] p-5 md:p-10">
+              <MascotPose pose={9} className="portal-guide-seal" label="Seals mascot presenting the client portal" />
               <div className="portal-preview h-full overflow-hidden rounded-2xl bg-white shadow-2xl">
                 <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
                   <div className="flex items-center gap-3"><Building2 className="text-brand-600" /><div><b className="block text-sm">Residencias ELORA</b><small className="text-slate-400">Building client portal</small></div></div>
@@ -973,7 +986,7 @@ export default function Landing() {
             <div data-anime-stagger className="mt-12 grid gap-4 md:grid-cols-3">
               {t.trustCommitments.map(([title, text], index) => {
                 const Icon = [ClipboardCheck, FileText, ShieldCheck][index];
-                return <article data-anime-item key={title} className="rounded-[24px] border border-slate-200 bg-white p-7 shadow-[0_18px_55px_rgba(7,37,61,.06)]"><span className="grid h-12 w-12 place-items-center rounded-2xl bg-brand-50 text-brand-600"><Icon size={22} /></span><h3 className="mt-7 font-display text-xl font-extrabold text-navy">{title}</h3><p className="mt-3 text-sm leading-7 text-slate-500">{text}</p></article>;
+                return <article data-anime-item key={title} className="trust-mascot-card relative overflow-hidden rounded-[24px] border border-slate-200 bg-white p-7 shadow-[0_18px_55px_rgba(7,37,61,.06)]"><MascotPose pose={[1, 3, 9][index]} className="trust-card-seal" label={`${title} Seals mascot`} /><span className="grid h-12 w-12 place-items-center rounded-2xl bg-brand-50 text-brand-600"><Icon size={22} /></span><h3 className="mt-7 max-w-[70%] font-display text-xl font-extrabold text-navy">{title}</h3><p className="mt-3 max-w-[74%] text-sm leading-7 text-slate-500">{text}</p></article>;
               })}
             </div>
             <div className="mt-16 grid gap-10 lg:grid-cols-[.65fr_1.35fr]">
@@ -1004,8 +1017,13 @@ export default function Landing() {
                 <p className="flex items-center gap-3"><Clock3 size={19} className="text-cyan" /> Toronto & Greater Toronto Area</p>
                 <p className="flex items-center gap-3"><ShieldCheck size={19} className="text-cyan" /> Authorized client portal available</p>
               </div>
+              <div className="contact-mascot-note mt-10 flex max-w-md items-center gap-4 rounded-[24px] border border-cyan/20 bg-white/[.055] p-4">
+                <MascotPose pose={5} className="contact-note-seal" label="Seals mascot taking service notes" />
+                <p className="text-sm font-extrabold leading-6 text-white">{lang === 'fr' ? 'Expliquez-nous le problème — notre phoque prend déjà des notes.' : 'Tell us the problem — our seal is already taking notes.'}</p>
+              </div>
             </div>
-            <form data-reveal="right" onSubmit={submit} className="contact-form-glow grid gap-4 rounded-2xl border border-white/15 bg-white/[.06] p-5 backdrop-blur md:grid-cols-2 md:p-8">
+            <form data-reveal="right" onSubmit={submit} className="contact-form-glow relative grid gap-4 overflow-hidden rounded-2xl border border-white/15 bg-white/[.06] p-5 backdrop-blur md:grid-cols-2 md:p-8">
+              <MascotPose pose={5} className="contact-form-watermark" label="" />
               <label><span className="dark-label">{t.fields[0]}</span><input className="dark-input" name="nombre" required placeholder={t.fields[0]} /></label>
               <label><span className="dark-label">{t.fields[1]}</span><input className="dark-input" type="email" name="email" required placeholder="name@email.com" /></label>
               <label><span className="dark-label">{t.fields[2]}</span><input className="dark-input" name="telefono" placeholder={t.fields[2]} /></label>
